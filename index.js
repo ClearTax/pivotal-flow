@@ -13,7 +13,7 @@ const {
   PIVOTAL_TOKEN,
   PIVOTAL_PROJECT_ID,
   getBranchPrefix,
-  CHECKOUT_QUESTIONS,
+  getCheckoutQuestions,
   formatLabels,
 } = utils;
 
@@ -103,13 +103,13 @@ const createStory = async () => {
     };
 
     const story = await postStory(PIVOTAL_PROJECT_ID, storyData);
-    console.log(chalk.green`Story created successfully. Visit the story ${story.url}`);
+    console.log(chalk.green(`\n\n✓ Story created successfully (${chalk.underline(story.url)})\n\n`));
 
     // checkout to a new branch
-    const checkoutAnswers = await inquirer.prompt(CHECKOUT_QUESTIONS);
+    const checkoutAnswers = await inquirer.prompt(getCheckoutQuestions(story));
     const { confirmCheckout, branchName } = checkoutAnswers;
     if (confirmCheckout && branchName) {
-      const checkoutBranchName = `${getBranchPrefix(story_type)}/${branchName}_${story.id}`;
+      const checkoutBranchName = `${getBranchPrefix(story_type)}/${branchName}-${story.id}`;
       execSync(`git checkout -b ${checkoutBranchName}`);
     }
   } catch (error) {
