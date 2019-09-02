@@ -72,7 +72,7 @@ ${chalk.green(`${prefix}/${'allow-user-login'}-${id}`)}\n`),
           if (val && val.length <= 3) {
             return 'Please enter a valid branch name (min. 4 characters)';
           }
-          if (val && val.test(/[^a-zA-Z\d\-_]/)) {
+          if (val && /[^a-zA-Z\d\-_]/i.test(val)) {
             return 'Please avoid any special characters in the branch name.';
           }
           return true;
