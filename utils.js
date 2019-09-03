@@ -98,22 +98,28 @@ const SETUP_QUESTIONS = [
   {
     type: 'input',
     name: 'pivotalToken',
-    message: chalk.yellow`You can create a pivotal token here https://www.pivotaltracker.com/profile
-      \nEnter your pivotal token: `,
+    prefix: chalk.cyan.dim(`
+‣ What's an API Token?:
+  ${chalk.underline('https://www.pivotaltracker.com/help/articles/api_token/')}
+‣ Create an API Token here:
+  ${chalk.underline('https://www.pivotaltracker.com/profile')}\n`),
+    message: 'Pivotal API Token',
     validate: val => {
       if (val && val.length === 32) return true;
-      return 'Please enter a valid 32 characters pivotal token.';
+      return 'Please enter a valid 32 character pivotal token.';
     },
   },
   {
     type: 'input',
     name: 'pivotalProjectId',
-    message: chalk.yellow`You can find the project id in the last part of your project board's URL:
-    For eg.: In https://www.pivotaltracker.com/n/projects/12341234 '12341234' is the project id.
-      \nEnter the project id: `,
+    prefix: chalk.cyan.dim(`
+You can find the Project ID in the last part of your project board's URL:
+For eg. in ${chalk.underline('https://www.pivotaltracker.com/n/projects/12341234')} ${chalk.bold('12341234')} is the Project ID.
+`),
+    message: 'Pivotal Project ID:',
     validate: value => {
       if (value.match(/^[0-9]{7}/)) return true;
-      return 'Please enter a valid 7 digit project id';
+      return 'Please enter a valid 7 digit Project ID.';
     },
   },
 ];
@@ -129,7 +135,7 @@ const STORY_QUESTIONS = [
 A story type is one of 'feature | bug | chore'.
 
 ‣ How to choose a story type:
-  https://www.pivotaltracker.com/help/articles/adding_stories/#story-types \n`)
+  ${chalk.underline('https://www.pivotaltracker.com/help/articles/adding_stories/#story-types')} \n`)
   },
   {
     type: 'input',
@@ -144,7 +150,7 @@ A story type is one of 'feature | bug | chore'.
 A story title is a brief description of the purpose or the desired outcome of the story.
 
 ‣ What is a story:
-  https://www.pivotaltracker.com/help/articles/terminology/#story \n`)
+  ${chalk.underline('https://www.pivotaltracker.com/help/articles/terminology/#story')} \n`)
   },
   {
     type: 'list',
@@ -159,7 +165,7 @@ A story title is a brief description of the purpose or the desired outcome of th
 Points are a rough estimate on the effort/complexity of the story.
 
 ‣ What is an estimate / what are story points?:
-  https://www.pivotaltracker.com/help/articles/estimating_stories/ \n`)
+  ${chalk.underline('https://www.pivotaltracker.com/help/articles/estimating_stories/')} \n`)
   },
   {
     type: 'input',
@@ -171,9 +177,9 @@ Use labels to tag groups of related stories:
 Enter comma-separated values, for eg: '${chalk.bold('front-end, performance, epic-feature')}'
 
 ‣ What are labels:
-  https://www.pivotaltracker.com/help/articles/tagging_stories_with_labels
+  ${chalk.underline('https://www.pivotaltracker.com/help/articles/tagging_stories_with_labels')}
 ‣ Epics:
-  https://www.pivotaltracker.com/help/articles/tracking_big_features_themes_with_epics/ \n`)
+  ${chalk.underline('https://www.pivotaltracker.com/help/articles/tracking_big_features_themes_with_epics/')} \n`)
   },
 ];
 

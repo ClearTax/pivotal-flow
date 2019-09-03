@@ -36,7 +36,7 @@ const setupProject = () => {
       `)
       );
     } else {
-      console.log(chalk.red`Project set up failed. Please try again.`);
+      console.log(chalk.red(`Project set up failed. Please try again.`));
     }
   });
 };
@@ -124,7 +124,7 @@ const init = () => {
   if (isSetupDone) {
     createStory();
   } else {
-    console.log(chalk.red`PIVOTAL_TOKEN or PIVOTAL_PROJECT_ID is missing\n`);
+    console.log(chalk.red(`PIVOTAL_TOKEN or PIVOTAL_PROJECT_ID is missing from your environment.\n`));
     confirmSetup();
   }
 };

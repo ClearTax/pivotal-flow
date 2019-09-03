@@ -3,7 +3,7 @@
 const { execSync } = require('child_process');
 const chalk = require('chalk');
 
-// https://github.com/typicode/husky#access-git-params-and-stdin
+/* https://github.com/typicode/husky#access-git-params-and-stdin */
 const { HUSKY_GIT_PARAMS: params } = process.env;
 
 const options = {
@@ -35,15 +35,22 @@ const checkPivotalId = str => PIVOTAL_MESSAGE_REGEX.test(str);
 
 // if previous head and current head are equal and checkout count is 1 it is probably a new branch
 if (prevHead === currentHead && checkoutCount === '1' && !checkPivotalId(branchName)) {
-  console.log(chalk.yellow`
-    [BEING NAUGHTY] Where is your pivotal story ID in your branch name?
+  console.log(chalk.yellow(`
+${chalk.inverse('[WARNING]')} A Pivotal Story ID is missing from your branch name! 🦄
+Your branch: ${chalk.white.bold(branchName)}
 
-    But, if you are new to this : Welcome!
-    Please refer to: https://github.com/ClearTax/pivotal-flow#references
+If this is your first time contributing to this repository - Welcome!
+Please refer to: ${chalk.underline('https://github.com/ClearTax/pivotal-flow#references')} to get started.
 
-    ------ ORIGINAL BRANCH MESSAGE ------
-    ${branchName}
-  `);
+---
+${chalk.dim(`
+Without the Pivotal Story ID in your branch name you would lose out on automatic updates to Pivotal stories via SCM & the commandline.
+
+Valid sample branch names:
+‣ 'feature/shiny-new-feature_12345678'
+‣ 'chore/changelogUpdate_12345678'
+‣ 'bugfix/fix-some-strange-bug_12345678'
+`)}`));
   return process.exit(1);
 }
 
