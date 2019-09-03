@@ -89,7 +89,7 @@ const CONFIRM_QUESTIONS = [
   {
     type: 'confirm',
     name: 'projectSetup',
-    prefix: chalk.dim('Looks like pivotal-flow has not been set-up.\n'),
+    prefix: chalk.cyan.dim('Looks like pivotal-flow has not been set-up.\n'),
     message: 'Would you like to set up pivotal-flow now?',
     default: false,
   },
