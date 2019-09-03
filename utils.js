@@ -89,7 +89,8 @@ const CONFIRM_QUESTIONS = [
   {
     type: 'confirm',
     name: 'projectSetup',
-    message: 'Would you like to set up auto creation of pivotal stories?',
+    prefix: chalk.dim('Looks like pivotal-flow has not been set-up.\n'),
+    message: 'Would you like to set up pivotal-flow now?',
     default: false,
   },
 ];

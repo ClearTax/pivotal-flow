@@ -26,15 +26,15 @@ const setupProject = () => {
     if (pivotalToken && pivotalProjectId) {
       console.log(
         chalk.yellow(`
-        To setup run the following command in your console
+To setup run the following commands in your console.
+You can also add them to your profile (~/.bash_profile, ~/.zshrc, ~/.profile, or ~/.bashrc) so it's set up for all new terminal sessions.
 
-        ${chalk.white(`export PIVOTAL_TOKEN=${pivotalToken}`)}
-        ${chalk.white(`export PIVOTAL_PROJECT_ID=${pivotalProjectId}`)}
+  ${chalk.white(`export PIVOTAL_TOKEN=${pivotalToken}`)}
+  ${chalk.white(`export PIVOTAL_PROJECT_ID=${pivotalProjectId}`)}
 
-        Once you run the above two command, run the setup script again
-        ${chalk.white('pivotal-flow-start')}
-      `)
-      );
+Once you run the above two commands, you can run the start script again:
+  ${chalk.white('pivotal-flow-start')}
+`));
     } else {
       console.log(chalk.red(`Project set up failed. Please try again.`));
     }
@@ -50,7 +50,7 @@ const confirmSetup = () => {
       setupProject();
     } else {
       console.log(
-        chalk.red`Not setting up the project. You would have to add pivotal story id manually to your branch`
+        chalk.red(`Set-up aborted. You would have to create Pivotal stories manually and manually add their IDs to your branch.`)
       );
     }
   });
@@ -124,7 +124,7 @@ const init = () => {
   if (isSetupDone) {
     createStory();
   } else {
-    console.log(chalk.red(`PIVOTAL_TOKEN or PIVOTAL_PROJECT_ID is missing from your environment.\n`));
+    console.log(chalk.red(`PIVOTAL_TOKEN and/or PIVOTAL_PROJECT_ID missing from your environment.\n`));
     confirmSetup();
   }
 };
