@@ -41,11 +41,6 @@ You can add the `pivotal-flow-check` as a post-checkout hook via [`husky` 🐶][
 Just add it to your `package.json` file, for example:
 
 ```diff
-diff --git a/package.json b/package.json
-index 0aac752..c96aa16 100644
---- a/package.json
-+++ b/package.json
-@@ -16,7 +16,8 @@
    },
    "husky": {
      "hooks": {
