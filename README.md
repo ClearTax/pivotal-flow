@@ -10,7 +10,7 @@ Automate your pivotal workflow.
 
 ```sh
 # Install it locally for your npm project
-npm install -D pivotal-flow`
+npm install -D pivotal-flow
 
 # You can also install it globally
 npm install -g pivotal-flow
@@ -33,7 +33,7 @@ npm install -g pivotal-flow
 
 Run `pivotal-flow-start` (alias: `pfs`) as a local/global command to start creating stories from the command line:
 
-![Pivotal Flow](https://assets1.cleartax-cdn.com/cleargst-frontend/misc/1567505374_pivotal-flow-new.gif)
+![Pivotal Flow](https://assets1.cleartax-cdn.com/cleargst-frontend/misc/1567511137_pivotal_flow.gif)
 
 ### Adding a post-checkout hook
 
