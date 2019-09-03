@@ -66,7 +66,7 @@ const getCheckoutQuestions = ({ name, story_type, id }) => {
 ${chalk.bold(`'${prefix}/'`)} will be prefixed with the branch name.
 
 Eg. if you enter '${chalk.bold('allow-user-login')}', the final branch name would be
-${chalk.bold(`${prefix}/${'allow-user-login'}-${id}`)}\n`),
+${chalk.bold(`${prefix}/${'allow-user-login'}_${id}`)}\n`),
         validate: val => {
           // branch name should not be too short
           if (val && val.length <= 3) {

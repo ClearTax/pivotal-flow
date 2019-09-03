@@ -109,7 +109,7 @@ const createStory = async () => {
     const checkoutAnswers = await inquirer.prompt(getCheckoutQuestions(story));
     const { confirmCheckout, branchName } = checkoutAnswers;
     if (confirmCheckout && branchName) {
-      const checkoutBranchName = `${getBranchPrefix(story_type)}/${branchName}-${story.id}`;
+      const checkoutBranchName = `${getBranchPrefix(story_type)}/${branchName}_${story.id}`;
       execSync(`git checkout -b ${checkoutBranchName}`);
     }
   } catch (error) {
