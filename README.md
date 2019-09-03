@@ -23,9 +23,9 @@ npm install -g pivotal-flow
 `pivotal-flow` has two commands to automate your workflow:
 
 1. `pivotal-flow-start`:  
-  To set up hooks for Setting up your environment to create new stories via the command line.
+  Create new stories via the command line.
 2. `pivotal-flow-check`:  
-  to check if any newly created branches have the pivotal story ID in the branch name.
+  Check all newly created branches have the pivotal story ID in the branch name.
 
 > you can also use the `pfs` alias for `pivotal-flow-start`
 
