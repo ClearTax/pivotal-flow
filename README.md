@@ -1,37 +1,79 @@
-# pivotal-flow
+# pivotal-flow 🔀
 
-Automate your pivotal workflow
+Automate your pivotal workflow.
 
-[![NPM](https://badgen.net//npm/v/pivotal-flow)](https://www.npmjs.com/package/pivotal-flow)
+[![npm](https://img.shields.io/npm/v/pivotal-flow?style=flat-square)](https://www.npmjs.com/package/pivotal-flow)
+[![GitHub](https://img.shields.io/github/license/cleartax/pivotal-flow?style=flat-square)](https://github.com/ClearTax/pivotal-flow/blob/master/LICENSE.md)
+[![npm](https://img.shields.io/npm/dw/pivotal-flow?style=flat-square)](https://www.npmjs.com/package/pivotal-flow)
 
 ## Install
 
-`npm install -D pivotal-flow`
+```sh
+# Install it locally for your npm project
+npm install -D pivotal-flow`
 
-can be installed globally as well
+# You can also install it globally
+npm install -g pivotal-flow
+```
 
-`npm install -g pivotal-flow`
+`pivotal-flow` works best with [`husky` 🐶][husky] & [`git-tracker`][git-tracker].
 
-### Usage
+## Usage
 
-pivotal-flow contains two commands to automate your workflow
+`pivotal-flow` has two commands to automate your workflow:
 
 1. `pivotal-flow-start`
 2. `pivotal-flow-check`
 
 > you can also use the `pfs` alias for `pivotal-flow-start`
 
-### See it in action
+* Use `pivotal-flow-start` to set up hooks for Setting up your environment to create new stories via the command line.
+* Use `pivotal-flow-check` to check if any newly created branches have the pivotal story ID in the branch name.
 
-![Pivotal Flow](https://assets1.cleartax-cdn.com/cleargst-frontend/misc/1567431893_pivotal-flow.gif)
+### Starting a story
 
-`pivotal-flow-check` can be used to check if the newly created branch contains the story id. This works
-best as a `post-checkout` git hook.
+Run `pivotal-flow-start` (alias: `pfs`) as a local/global command to start creating stories from the command line:
 
-![pivotal check](https://assets1.cleartax-cdn.com/cleargst-frontend/misc/1567432167_pivotal-check.png)
+![Pivotal Flow](https://assets1.cleartax-cdn.com/cleargst-frontend/misc/1567505374_pivotal-flow-new.gif)
 
-### References
+### Adding a post-checkout hook
 
-1. [Git tracker](https://github.com/stevenharman/git_tracker)
-2. [Git hooks](https://git-scm.com/docs/githooks#_post_checkout)
-3. [Husky](https://github.com/typicode/husky)
+You can add the `pivotal-flow-check` as a post-checkout hook via [`husky` 🐶][husky].
+Just add it to your `package.json` file, for example:
+
+```diff
+diff --git a/package.json b/package.json
+index 0aac752..c96aa16 100644
+--- a/package.json
++++ b/package.json
+@@ -16,7 +16,8 @@
+   },
+   "husky": {
+     "hooks": {
+        // ...
++      "post-checkout": "pivotal-flow-check"
+     }
+   }
+ }
+```
+
+Now, while checking out a new branch, you can ensure that the [Pivotal][pivotal] story id is added to your branch name.
+
+Using this alongside [`git-tracker`][git-tracker] and the [`Pivotal GitHub Integration`][pivotal-github] ensures your updates (commits, pushes, merges etc) on GitHub are posted directly and automatically to your Pivotal stories.
+
+### Other
+
+Follow instructions for [`git-tracker`][git-tracker] and the [`Pivotal GitHub Integration`][pivotal-github] to set-up the entire flow for your repository.
+
+## References
+
+1. [PivotalTracker][pivotal]
+1. [`git-tracker`][git-tracker]
+1. [Git Hooks][git-hooks]
+1. [Husky 🐶][husky]
+
+[pivotal]: https://www.pivotaltracker.com/features
+[husky]: https://github.com/typicode/husky
+[git-tracker]: https://github.com/stevenharman/git_tracker
+[git-hooks]: https://git-scm.com/docs/githooks#_post_checkout
+[pivotal-github]: https://www.pivotaltracker.com/help/articles/github_integration/
