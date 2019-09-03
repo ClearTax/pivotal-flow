@@ -19,14 +19,16 @@ pivotal-flow contains two commands to automate your workflow
 1. `pivotal-flow-start`
 2. `pivotal-flow-check`
 
+> you can also use the `pfs` alias for `pivotal-flow-start`
+
 ### See it in action
 
-![](https://assets1.cleartax-cdn.com/cleargst-frontend/misc/1567431893_pivotal-flow.gif)
+![Pivotal Flow](https://assets1.cleartax-cdn.com/cleargst-frontend/misc/1567431893_pivotal-flow.gif)
 
 `pivotal-flow-check` can be used to check if the newly created branch contains the story id. This works
 best as a `post-checkout` git hook.
 
-![](https://assets1.cleartax-cdn.com/cleargst-frontend/misc/1567432167_pivotal-check.png)
+![pivotal check](https://assets1.cleartax-cdn.com/cleargst-frontend/misc/1567432167_pivotal-check.png)
 
 ### References
 

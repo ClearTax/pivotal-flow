@@ -5,7 +5,8 @@
   "main": "index.js",
   "bin": {
     "pivotal-flow-start": "index.js",
-    "pivotal-flow-check": "./post-checkout.js"
+    "pivotal-flow-check": "./post-checkout.js",
+    "pfs": "index.js"
   },
   "repository": {
     "type": "git",
