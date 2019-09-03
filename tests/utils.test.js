@@ -11,22 +11,34 @@ test('branch name from story name', t => {
   }), `build-an-end-to-end-feature`);
 
   t.is(suggestBranchName({
-    name: 'New GST Returns Dashboard (without API)',
-  }), `new-gst-returns-dashboard`);
+    name: 'New ITR Dashboard (no backend integration)',
+  }), `new-itr-dashboard-no-backend`);
 
   t.is(suggestBranchName({
-    name: '[P0][Anx-1] Validation Errors',
-  }), `p0-anx-1-validation-errors`);
+    name: '[P0][ITR-1] Validation Errors',
+  }), `p0-itr-1-validation-errors`);
 
   t.is(suggestBranchName({
-    name: 'Creating Schema and resolver for ITC Summary table data in Hydra',
-  }), `creating-schema-and-resolver`);
+    name: 'Create schema and resolvers for summary table data in app',
+  }), `create-schema-and-resolvers`);
 
   t.is(suggestBranchName({
-    name: 'Null Pointer Exception when computing GSTR9 Tables for customers who have not filed GSTR1.',
-  }), `null-pointer-exception-when`);
+    name: 'Fix Null Pointer Exception when computing tables for customers who have not filed recently.',
+  }), `fix-null-pointer-exception`);
+
+  t.is(suggestBranchName({
+    name: `Fix TypeError: Cannot read property 'foo' of undefined`,
+  }), `fix-type-error-cannot-read`);
 
   t.is(suggestBranchName({
     name: 'Add https://example.com in some page',
   }), `add-https-example-com-in-some`);
+
+  t.is(suggestBranchName({
+    name: 'Add XMLHttpRequest listener',
+  }), `add-xml-http-request-listener`);
+
+  t.is(suggestBranchName({
+    name: 'Add listener for XMLHttpRequest',
+  }), `add-listener-for-xml-http`);
 });
