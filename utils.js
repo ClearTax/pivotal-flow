@@ -62,11 +62,11 @@ const getCheckoutQuestions = ({ name, story_type, id }) => {
         name: 'branchName',
         default: suggestedBranchName,
         message: 'Branch Name',
-        prefix: chalk.dim(`
-${chalk.green(`'${prefix}/'`)} will be prefixed with the branch name.
+        prefix: chalk.cyan.dim(`
+${chalk.bold(`'${prefix}/'`)} will be prefixed with the branch name.
 
-Eg. if you enter '${chalk.green('allow-user-login')}', the final branch name would be
-${chalk.green(`${prefix}/${'allow-user-login'}-${id}`)}\n`),
+Eg. if you enter '${chalk.bold('allow-user-login')}', the final branch name would be
+${chalk.bold(`${prefix}/${'allow-user-login'}-${id}`)}\n`),
         validate: val => {
           // branch name should not be too short
           if (val && val.length <= 3) {
@@ -165,7 +165,7 @@ Points are a rough estimate on the effort/complexity of the story.
     type: 'input',
     name: 'labelValues',
     message: 'Story: Labels/Epics',
-    default: 'pivotal-flow-test-stories',
+    default: '',
     prefix: chalk.cyan.dim(`
 Use labels to tag groups of related stories:
 Enter comma-separated values, for eg: '${chalk.bold('front-end, performance, epic-feature')}'
