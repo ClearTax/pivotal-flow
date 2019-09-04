@@ -4,9 +4,11 @@
   "description": "Automate your pivotal workflow",
   "main": "index.js",
   "bin": {
+    "pivotal-flow": "index.js",
     "pivotal-flow-start": "index.js",
     "pivotal-flow-check": "./post-checkout.js",
-    "pfs": "index.js"
+    "pfs": "index.js",
+    "pf": "index.js"
   },
   "repository": {
     "type": "git",
