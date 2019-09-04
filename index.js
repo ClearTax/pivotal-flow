@@ -4,18 +4,11 @@ const chalk = require('chalk');
 const inquirer = require('inquirer');
 const { execSync } = require('child_process');
 const utils = require('./utils');
+const constants = require('./constants');
 
-const {
-  isSetupDone,
-  SETUP_QUESTIONS,
-  STORY_QUESTIONS,
-  CONFIRM_QUESTIONS,
-  PIVOTAL_TOKEN,
-  PIVOTAL_PROJECT_ID,
-  getBranchPrefix,
-  getCheckoutQuestions,
-  formatLabels,
-} = utils;
+const { isSetupDone, PIVOTAL_TOKEN, PIVOTAL_PROJECT_ID, getBranchPrefix, getCheckoutQuestions, formatLabels } = utils;
+
+const { SETUP_QUESTIONS, STORY_QUESTIONS, CONFIRM_QUESTIONS, WORKFLOW_QUESTIONS, STORY_KIND } = constants;
 
 /**
  * Set up the pivotal token and project id
@@ -34,7 +27,8 @@ You can also add them to your profile (~/.bash_profile, ~/.zshrc, ~/.profile, or
 
 Once you run the above two commands, you can run the start script again:
   ${chalk.white('pivotal-flow-start')}
-`));
+`)
+      );
     } else {
       console.log(chalk.red(`Project set up failed. Please try again.`));
     }
@@ -50,7 +44,9 @@ const confirmSetup = () => {
       setupProject();
     } else {
       console.log(
-        chalk.red(`Set-up aborted. You would have to create Pivotal stories manually and manually add their IDs to your branch.`)
+        chalk.red(
+          `Set-up aborted. You would have to create Pivotal stories manually and manually add their IDs to your branch.`
+        )
       );
     }
   });
@@ -118,11 +114,40 @@ const createStory = async () => {
   }
 };
 
+const getStories = async ({ projectId = PIVOTAL_PROJECT_ID, query }) => {
+  const url = `/projects/${projectId}/search?query=${query}`;
+  return await request.get(url).then(res => res.data);
+};
+
+const workOnMyStory = async () => {
+  const user = await getProfileDetails();
+  const query = `owner:${user.id} AND state:unstarted,planned`;
+  const projectId = PIVOTAL_PROJECT_ID;
+  const stories = await getStories({ projectId, query });
+  console.log(stories);
+};
+
 // initialize the project
-const init = () => {
+const init = async () => {
   // check if project set up is already done
   if (isSetupDone) {
-    createStory();
+    const ans = await inquirer.prompt(WORKFLOW_QUESTIONS);
+    console.log(ans);
+    switch (ans.storyKind) {
+      case STORY_KIND.NEW:
+        createStory();
+        break;
+      case STORY_KIND.MY_STORY:
+        console.log('my story');
+        workOnMyStory();
+      case STORY_KIND.PICK_STORY:
+        console.log('exiting story');
+        break;
+      default:
+        // createStory();
+        console.log('default work');
+        break;
+    }
   } else {
     console.log(chalk.red(`PIVOTAL_TOKEN and/or PIVOTAL_PROJECT_ID missing from your environment.\n`));
     confirmSetup();
