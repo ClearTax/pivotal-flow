@@ -83,6 +83,45 @@ ${chalk.bold(`${prefix}/${'allow-user-login'}_${id}`)}\n`),
   ];
 };
 
+/**
+ * Truncate a given long string and add ellipsis
+ * @param {string} str
+ */
+const trunc = str => {
+  if (str.length <= 100) return str;
+  const truncated = str.substr(0, 100);
+  return `${truncated.substr(0, truncated.lastIndexOf(' '))} ...`;
+};
+
+/**
+ * Format the story question
+ * @param {object} stories
+ */
+const getStoryQuestions = stories => {
+  const choices = stories.map(story => {
+    const { story_type, name, id } = story;
+    switch (story_type) {
+      case 'feature':
+        return chalk.green(`⭐: ${trunc(name)}`);
+      case 'bug':
+        return chalk.red(`🐞: ${trunc(name)}`);
+      case 'chore':
+        return chalk.blue(`⚙️: ${trunc(name)}`);
+      default:
+        return chalk.yellow(`${name}`);
+    }
+  });
+  return [
+    {
+      type: 'list',
+      name: 'selectStory',
+      message: 'Story: Select',
+      choices,
+    },
+  ];
+};
+
+
 module.exports = {
   isSetupDone,
   PIVOTAL_TOKEN,
@@ -91,4 +130,5 @@ module.exports = {
   getCheckoutQuestions,
   formatLabels,
   suggestBranchName,
+  getStoryQuestions,
 };

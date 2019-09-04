@@ -6,7 +6,15 @@ const { execSync } = require('child_process');
 const utils = require('./utils');
 const constants = require('./constants');
 
-const { isSetupDone, PIVOTAL_TOKEN, PIVOTAL_PROJECT_ID, getBranchPrefix, getCheckoutQuestions, formatLabels } = utils;
+const {
+  isSetupDone,
+  PIVOTAL_TOKEN,
+  PIVOTAL_PROJECT_ID,
+  getBranchPrefix,
+  getCheckoutQuestions,
+  formatLabels,
+  getStoryQuestions,
+} = utils;
 
 const { SETUP_QUESTIONS, STORY_QUESTIONS, CONFIRM_QUESTIONS, WORKFLOW_QUESTIONS, STORY_KIND } = constants;
 
@@ -55,7 +63,7 @@ const confirmSetup = () => {
 // axios basic config
 const request = axios.create({
   baseURL: `https://www.pivotaltracker.com/services/v5`,
-  timeout: 3000,
+  timeout: 30000, // search could be really slow in pivotal
   headers: { 'X-TrackerToken': PIVOTAL_TOKEN },
 });
 
@@ -119,12 +127,15 @@ const getStories = async ({ projectId = PIVOTAL_PROJECT_ID, query }) => {
   return await request.get(url).then(res => res.data);
 };
 
-const workOnMyStory = async () => {
-  const user = await getProfileDetails();
-  const query = `owner:${user.id} AND state:unstarted,planned`;
+const workOnStory = async (owner = '') => {
+  const query = `mywork:"${owner}" AND state:unstarted,planned`;
   const projectId = PIVOTAL_PROJECT_ID;
-  const stories = await getStories({ projectId, query });
-  console.log(stories);
+  const data = await getStories({ projectId, query });
+  const {
+    stories: { stories },
+  } = data;
+  const ans = await inquirer.prompt(getStoryQuestions(stories));
+  console.log(ans);
 };
 
 // initialize the project
@@ -132,20 +143,19 @@ const init = async () => {
   // check if project set up is already done
   if (isSetupDone) {
     const ans = await inquirer.prompt(WORKFLOW_QUESTIONS);
-    console.log(ans);
     switch (ans.storyKind) {
       case STORY_KIND.NEW:
         createStory();
         break;
       case STORY_KIND.MY_STORY:
-        console.log('my story');
-        workOnMyStory();
+        const user = await getProfileDetails();
+        workOnStory(user.id);
+        break;
       case STORY_KIND.PICK_STORY:
-        console.log('exiting story');
+        workOnStory();
         break;
       default:
-        // createStory();
-        console.log('default work');
+        createStory();
         break;
     }
   } else {
