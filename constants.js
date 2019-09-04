@@ -113,15 +113,6 @@ const WORKFLOW_QUESTIONS = [
     name: 'storyKind',
     message: 'Pick a flow',
     choices: [STORY_KIND.NEW, STORY_KIND.MY_STORY, STORY_KIND.UNASSIGNED],
-    validate: answer => {
-      if (answer.length < 1) {
-        return 'You must choose an option.';
-      }
-      if (answer.length > 1) {
-        return 'You must choose only one option.';
-      }
-      return true;
-    },
   },
 ];
 
