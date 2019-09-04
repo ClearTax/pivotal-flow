@@ -54,7 +54,7 @@ const getCheckoutQuestions = ({ name, story_type, id }) => {
       type: 'confirm',
       name: 'confirmCheckout',
       message: 'Would you like to checkout a new git branch for this story?',
-      default: false,
+      default: true,
     },
     {
       type: 'input',
@@ -102,13 +102,13 @@ const getStoryQuestions = stories => {
     const { story_type, name, id } = story;
     switch (story_type) {
       case 'feature':
-        return chalk.green(`⭐: ${trunc(name)}`);
+        return chalk.green(`⭐ : [${id}] - ${trunc(name)}`);
       case 'bug':
-        return chalk.red(`🐞: ${trunc(name)}`);
+        return chalk.red(`🐞 : [${id}] - ${trunc(name)}`);
       case 'chore':
-        return chalk.blue(`⚙️: ${trunc(name)}`);
+        return chalk.blue(`⚙️ : [${id}] - ${trunc(name)}`);
       default:
-        return chalk.yellow(`${name}`);
+        return chalk.yellow(`[${id}] - ${trunc(name)}`);
     }
   });
   return [
@@ -120,7 +120,6 @@ const getStoryQuestions = stories => {
     },
   ];
 };
-
 
 module.exports = {
   isSetupDone,

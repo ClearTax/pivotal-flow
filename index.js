@@ -63,7 +63,7 @@ const confirmSetup = () => {
 // axios basic config
 const request = axios.create({
   baseURL: `https://www.pivotaltracker.com/services/v5`,
-  timeout: 30000, // search could be really slow in pivotal
+  timeout: 10000, // search could be really slow in pivotal
   headers: { 'X-TrackerToken': PIVOTAL_TOKEN },
 });
 
@@ -83,6 +83,15 @@ const postStory = async (projectId, data) => {
   return await request.post(`/projects/${projectId}/stories`, data).then(res => res.data);
 };
 
+const checkoutBranch = async story => {
+  const { story_type, id } = story;
+  const checkoutAnswers = await inquirer.prompt(getCheckoutQuestions(story));
+  const { confirmCheckout, branchName } = checkoutAnswers;
+  if (confirmCheckout && branchName) {
+    const checkoutBranchName = `${getBranchPrefix(story_type)}/${branchName}_${id}`;
+    execSync(`git checkout -b ${checkoutBranchName}`);
+  }
+};
 /**
  * Create pivotal story
  */
@@ -110,12 +119,7 @@ const createStory = async () => {
     console.log(chalk.green(`\n\n✓ Story created successfully (${chalk.underline(story.url)})\n\n`));
 
     // checkout to a new branch
-    const checkoutAnswers = await inquirer.prompt(getCheckoutQuestions(story));
-    const { confirmCheckout, branchName } = checkoutAnswers;
-    if (confirmCheckout && branchName) {
-      const checkoutBranchName = `${getBranchPrefix(story_type)}/${branchName}_${story.id}`;
-      execSync(`git checkout -b ${checkoutBranchName}`);
-    }
+    checkoutBranch(story);
   } catch (error) {
     console.error(error);
     process.exit(1);
@@ -124,18 +128,25 @@ const createStory = async () => {
 
 const getStories = async ({ projectId = PIVOTAL_PROJECT_ID, query }) => {
   const url = `/projects/${projectId}/search?query=${query}`;
-  return await request.get(url).then(res => res.data);
+  return await request.get(url).then(res => res.data); // Todo: error handling- query could be invalid
 };
 
-const workOnStory = async (owner = '') => {
-  const query = `mywork:"${owner}" AND state:unstarted,planned`;
-  const projectId = PIVOTAL_PROJECT_ID;
-  const data = await getStories({ projectId, query });
+const workOnStory = async ({ storyKind, ownerId }) => {
+  // mywork query was much faster than owner:"" or no:owner and other options
+  // refer https://www.pivotaltracker.com/help/articles/advanced_search/
+
+  let query = `mywork:"${ownerId}" AND state:unstarted,planned`;
+  if (storyKind === STORY_KIND.UNASSIGNED) {
+    query = `mywork:"" AND -owner:"${ownerId}" AND state:unstarted,planned`;
+  }
+  const data = await getStories({ query });
   const {
     stories: { stories },
   } = data;
-  const ans = await inquirer.prompt(getStoryQuestions(stories));
-  console.log(ans);
+  const answers = await inquirer.prompt(getStoryQuestions(stories));
+  const [storyId] = answers.selectStory.match(/\d{9}/);
+  const selectedStory = stories.find(story => story.id === Number(storyId));
+  checkoutBranch(selectedStory);
 };
 
 // initialize the project
@@ -144,19 +155,24 @@ const init = async () => {
   if (isSetupDone) {
     const ans = await inquirer.prompt(WORKFLOW_QUESTIONS);
     switch (ans.storyKind) {
-      case STORY_KIND.NEW:
+      case STORY_KIND.NEW: {
         createStory();
         break;
-      case STORY_KIND.MY_STORY:
+      }
+      case STORY_KIND.MY_STORY: {
         const user = await getProfileDetails();
-        workOnStory(user.id);
+        workOnStory({ storyKind: STORY_KIND.MY_STORY, ownerId: user.id });
         break;
-      case STORY_KIND.PICK_STORY:
-        workOnStory();
+      }
+      case STORY_KIND.UNASSIGNED: {
+        const user = await getProfileDetails();
+        workOnStory({ storyKind: STORY_KIND.UNASSIGNED, ownerId: user.id });
         break;
-      default:
+      }
+      default: {
         createStory();
         break;
+      }
     }
   } else {
     console.log(chalk.red(`PIVOTAL_TOKEN and/or PIVOTAL_PROJECT_ID missing from your environment.\n`));

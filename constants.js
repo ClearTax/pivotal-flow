@@ -104,7 +104,7 @@ Enter comma-separated values, for eg: '${chalk.bold('front-end, performance, epi
 const STORY_KIND = {
   NEW: 'Start a new Story',
   MY_STORY: 'Work on a story assigned to you',
-  PICK_STORY: 'Work on an unassigned story',
+  UNASSIGNED: 'Work on an unassigned story',
 };
 
 const WORKFLOW_QUESTIONS = [
@@ -112,7 +112,7 @@ const WORKFLOW_QUESTIONS = [
     type: 'list',
     name: 'storyKind',
     message: 'Pick a flow',
-    choices: [STORY_KIND.NEW, STORY_KIND.MY_STORY, STORY_KIND.PICK_STORY],
+    choices: [STORY_KIND.NEW, STORY_KIND.MY_STORY, STORY_KIND.UNASSIGNED],
     validate: answer => {
       if (answer.length < 1) {
         return 'You must choose an option.';
