@@ -22,18 +22,26 @@ npm install -g pivotal-flow
 
 `pivotal-flow` has two commands to automate your workflow:
 
-1. `pivotal-flow-start`:  
-  Create new stories via the command line.
-2. `pivotal-flow-check`:  
+1. `pivotal-flow`:
+  Create a new story or work on an existing story via the command line.
+2. `pivotal-flow-check`:
   Check all newly created branches have the pivotal story ID in the branch name.
 
-> you can also use the `pfs` alias for `pivotal-flow-start`
+> you can also use the `pf` alias for `pivotal-flow`
 
-### Starting a story
+### Starting a new story
 
-Run `pivotal-flow-start` (alias: `pfs`) as a local/global command to start creating stories from the command line:
+Run `pivotal-flow` (alias: `pf`) as a local/global command to start creating stories from the command line:
 
 ![Pivotal Flow](https://assets1.cleartax-cdn.com/cleargst-frontend/misc/1567511137_pivotal_flow.gif)
+
+### Work on an existing story
+
+![my stories](https://assets1.cleartax-cdn.com/cleargst-frontend/misc/1567666883_mystories.gif)
+
+### Fuzzy search
+
+![fuzzy search](https://assets1.cleartax-cdn.com/cleargst-frontend/misc/1567667018_pf_fuzzy.gif)
 
 ### Adding a post-checkout hook
 
