@@ -162,6 +162,14 @@ const workOnStory = async ({ storyKind, ownerId }) => {
     const answers = await inquirer.prompt(getStoryQuestions(stories));
     const [storyId] = answers.selectStory.match(/\d{9}/);
     const selectedStory = stories.find(story => story.id === Number(storyId));
+    const { name, estimate = 'NA', labels = [], description = '' } = selectedStory;
+    const printStory = {
+      name,
+      estimate,
+      labels: labels.map(label => label.name || ''),
+      description,
+    };
+    console.log(printStory);
     checkoutBranch(selectedStory);
   } else {
     console.log(chalk.red('No stories found. Please ensure that you have stories in your current iteration/backlog.'));
