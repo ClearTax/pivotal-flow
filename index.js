@@ -83,6 +83,12 @@ const postStory = async (projectId, data) => {
   return await request.post(`/projects/${projectId}/stories`, data).then(res => res.data);
 };
 
+/**
+ * Check out to a new branch based on the story details and branch name
+ * @param {object} story
+ * @param {string} story.story_type - feature | bug | chore
+ * @param {string} story.id - Unique id of the story
+ */
 const checkoutBranch = async story => {
   const { story_type, id } = story;
   const checkoutAnswers = await inquirer.prompt(getCheckoutQuestions(story));
@@ -92,6 +98,7 @@ const checkoutBranch = async story => {
     execSync(`git checkout -b ${checkoutBranchName}`);
   }
 };
+
 /**
  * Create pivotal story
  */
@@ -112,7 +119,7 @@ const createStory = async () => {
       estimate,
       labels,
       owner_ids: [user.id],
-      current_state: 'planned', // assuming the story is started if you are working on it
+      current_state: 'planned', // assuming the story is in the current iteration if you are working on it
     };
 
     const story = await postStory(PIVOTAL_PROJECT_ID, storyData);
@@ -125,6 +132,7 @@ const createStory = async () => {
     process.exit(1);
   }
 };
+
 /**
  * Fetch stories based on project and pivotal query
  * @param  {string} projectId - Current project. default to PIVOTAL_PROJECT_ID
