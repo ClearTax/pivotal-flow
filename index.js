@@ -6,6 +6,8 @@ const { execSync } = require('child_process');
 const utils = require('./utils');
 const constants = require('./constants');
 
+inquirer.registerPrompt('autocomplete', require('inquirer-autocomplete-prompt'));
+
 const {
   isSetupDone,
   PIVOTAL_TOKEN,
@@ -103,7 +105,6 @@ const checkoutBranch = async story => {
  * Create pivotal story
  */
 const createStory = async () => {
-  /* eslint-disable @typescript-eslint/camelcase */
   try {
     const storyAnswers = await inquirer.prompt(STORY_QUESTIONS);
 

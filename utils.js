@@ -1,5 +1,6 @@
 const chalk = require('chalk');
 const slugify = require('@sindresorhus/slugify');
+const fuzzy = require('fuzzy');
 
 const { PIVOTAL_TOKEN, PIVOTAL_PROJECT_ID } = process.env;
 const isSetupDone = !!(PIVOTAL_TOKEN && PIVOTAL_PROJECT_ID);
@@ -115,12 +116,24 @@ const getStoryQuestions = stories => {
         return chalk.yellow(`[${id}] - ${trunc(name)}`);
     }
   });
+  // TODO add debounce
+  const searchStory = (answers, input = '') => {
+    return new Promise(resolve => {
+      const fuzzyResult = fuzzy.filter(input, choices);
+      resolve(
+        fuzzyResult.map(function(el) {
+          return el.original;
+        })
+      );
+    });
+  };
   return [
     {
-      type: 'list',
+      type: 'autocomplete',
       name: 'selectStory',
-      message: 'Story: Select',
-      choices,
+      prefix: chalk.cyan.dim('You can also search by story name or story id \n'),
+      message: 'Select a story',
+      source: searchStory,
     },
   ];
 };
