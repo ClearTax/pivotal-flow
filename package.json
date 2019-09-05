@@ -36,6 +36,21 @@
   "homepage": "https://github.com/ClearTax/pivotal-flow#readme",
   "author": "Raj Anand",
   "license": "MIT",
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "**/*.{json}": [
+      "prettier --write",
+      "git add"
+    ],
+    "**/*.{js,ts,tsx}": [
+      "eslint --fix",
+      "git add"
+    ]
+  },
   "dependencies": {
     "@sindresorhus/slugify": "^0.9.1",
     "axios": "^0.19.0",
@@ -43,6 +58,12 @@
     "inquirer": "^7.0.0"
   },
   "devDependencies": {
-    "ava": "^2.3.0"
+    "ava": "^2.3.0",
+    "eslint": "^6.3.0",
+    "eslint-config-prettier": "^6.2.0",
+    "eslint-plugin-prettier": "^3.1.0",
+    "husky": "^3.0.5",
+    "lint-staged": "^9.2.5",
+    "prettier": "^1.18.2"
   }
 }

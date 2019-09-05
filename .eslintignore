@@ -1,0 +1,5 @@
+!.eslintrc.js
+!.prettierrc.js
+.vscode
+.github
+node_modules

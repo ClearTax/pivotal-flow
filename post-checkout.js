@@ -35,7 +35,8 @@ const checkPivotalId = str => PIVOTAL_MESSAGE_REGEX.test(str);
 
 // if previous head and current head are equal and checkout count is 1 it is probably a new branch
 if (prevHead === currentHead && checkoutCount === '1' && !checkPivotalId(branchName)) {
-  console.log(chalk.yellow(`
+  console.log(
+    chalk.yellow(`
 ${chalk.inverse('[WARNING]')} A Pivotal Story ID is missing from your branch name! 🦄
 Your branch: ${chalk.white.bold(branchName)}
 
@@ -50,8 +51,9 @@ Valid sample branch names:
 ‣ 'feature/shiny-new-feature_12345678'
 ‣ 'chore/changelogUpdate_12345678'
 ‣ 'bugfix/fix-some-strange-bug_12345678'
-`)}`));
-  return process.exit(1);
+`)}`)
+  );
+  process.exit(1);
 }
 
-process.exit(0)
+process.exit(0);
