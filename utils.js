@@ -111,7 +111,7 @@ const getStoryQuestions = stories => {
       case 'bug':
         return chalk.red(`🐞 : [${id}] - ${trunc(name)}`);
       case 'chore':
-        return chalk.blue(`⚙️ : [${id}] - ${trunc(name)}`);
+        return chalk.blue(`⚙️  : [${id}] - ${trunc(name)}`);
       default:
         return chalk.yellow(`[${id}] - ${trunc(name)}`);
     }

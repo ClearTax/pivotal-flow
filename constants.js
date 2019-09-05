@@ -104,7 +104,7 @@ Enter comma-separated values, for eg: '${chalk.bold('front-end, performance, epi
 const STORY_KIND = {
   NEW: 'Start a new Story',
   MY_STORY: 'Work on a story assigned to you',
-  UNASSIGNED: 'Work on an unassigned story',
+  UNASSIGNED: `Work on other story`,
 };
 
 const WORKFLOW_QUESTIONS = [
