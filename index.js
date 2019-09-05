@@ -104,7 +104,7 @@ const checkoutBranch = async story => {
 /**
  * Create pivotal story
  */
-const createStory = async ({ owner }) => {
+const createStory = async ({ ownerId }) => {
   try {
     const storyAnswers = await inquirer.prompt(STORY_QUESTIONS);
 
@@ -115,7 +115,7 @@ const createStory = async ({ owner }) => {
       name,
       estimate,
       labels,
-      owner_ids: [owner],
+      owner_ids: [ownerId],
       current_state: 'planned', // assuming the story is in the current iteration if you are working on it
     };
 
