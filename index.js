@@ -104,13 +104,9 @@ const checkoutBranch = async story => {
 /**
  * Create pivotal story
  */
-const createStory = async () => {
+const createStory = async ({ owner }) => {
   try {
     const storyAnswers = await inquirer.prompt(STORY_QUESTIONS);
-
-    // need the current user id to set the story owner
-    // otherwise the story will be unassigned
-    const user = await getProfileDetails();
 
     const { story_type, name, estimate, labelValues } = storyAnswers;
     const labels = formatLabels(labelValues);
@@ -119,7 +115,7 @@ const createStory = async () => {
       name,
       estimate,
       labels,
-      owner_ids: [user.id],
+      owner_ids: [owner],
       current_state: 'planned', // assuming the story is in the current iteration if you are working on it
     };
 
@@ -177,23 +173,23 @@ const init = async () => {
   // check if project set up is already done
   if (isSetupDone) {
     const ans = await inquirer.prompt(WORKFLOW_QUESTIONS);
+    const user = await getProfileDetails();
+    const ownerId = user.id;
     switch (ans.storyKind) {
       case STORY_KIND.NEW: {
-        createStory();
+        createStory({ ownerId });
         break;
       }
       case STORY_KIND.MY_STORY: {
-        const user = await getProfileDetails();
-        workOnStory({ storyKind: STORY_KIND.MY_STORY, ownerId: user.id });
+        workOnStory({ storyKind: STORY_KIND.MY_STORY, ownerId });
         break;
       }
       case STORY_KIND.UNASSIGNED: {
-        const user = await getProfileDetails();
-        workOnStory({ storyKind: STORY_KIND.UNASSIGNED, ownerId: user.id });
+        workOnStory({ storyKind: STORY_KIND.UNASSIGNED, ownerId });
         break;
       }
       default: {
-        createStory();
+        createStory({ ownerId });
         break;
       }
     }
