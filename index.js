@@ -125,12 +125,22 @@ const createStory = async () => {
     process.exit(1);
   }
 };
-
+/**
+ * Fetch stories based on project and pivotal query
+ * @param  {string} projectId - Current project. default to PIVOTAL_PROJECT_ID
+ * @param  {string} query - Pivotal search query
+ * @return {Array} - Array of stories
+ */
 const getStories = async ({ projectId = PIVOTAL_PROJECT_ID, query }) => {
   const url = `/projects/${projectId}/search?query=${query}`;
-  return await request.get(url).then(res => res.data); // Todo: error handling- query could be invalid
+  return await request.get(url).then(res => res.data);
 };
 
+/**
+ * Work on an existing story.
+ * @param  {string} storyKind - UNASSIGNED or MY_STORY
+ * @param  {string} ownerId - User id
+ */
 const workOnStory = async ({ storyKind, ownerId }) => {
   // mywork query was much faster than owner:"" or no:owner and other options
   // refer https://www.pivotaltracker.com/help/articles/advanced_search/
@@ -143,10 +153,14 @@ const workOnStory = async ({ storyKind, ownerId }) => {
   const {
     stories: { stories },
   } = data;
-  const answers = await inquirer.prompt(getStoryQuestions(stories));
-  const [storyId] = answers.selectStory.match(/\d{9}/);
-  const selectedStory = stories.find(story => story.id === Number(storyId));
-  checkoutBranch(selectedStory);
+  if (stories && stories.length) {
+    const answers = await inquirer.prompt(getStoryQuestions(stories));
+    const [storyId] = answers.selectStory.match(/\d{9}/);
+    const selectedStory = stories.find(story => story.id === Number(storyId));
+    checkoutBranch(selectedStory);
+  } else {
+    console.log(chalk.red('No stories found. Please ensure that you have stories in your current iteration/backlog.'));
+  }
 };
 
 // initialize the project

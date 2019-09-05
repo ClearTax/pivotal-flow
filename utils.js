@@ -86,6 +86,7 @@ ${chalk.bold(`${prefix}/${'allow-user-login'}_${id}`)}\n`),
 /**
  * Truncate a given long string and add ellipsis
  * @param {string} str
+ * @return {string} - Truncated string
  */
 const trunc = str => {
   if (str.length <= 100) return str;
@@ -96,6 +97,9 @@ const trunc = str => {
 /**
  * Format the story question
  * @param {object} stories
+ * @param {string} story.story_type - feature | bug | chore
+ * @param {string} story.name - name of the story
+ * @param {string} story.id - Unique id of the story
  */
 const getStoryQuestions = stories => {
   const choices = stories.map(story => {
