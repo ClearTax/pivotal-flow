@@ -37,11 +37,11 @@ Run `pivotal-flow` (alias: `pf`) as a local/global command to start creating sto
 
 ### Work on an existing story
 
-![my stories](https://assets1.cleartax-cdn.com/cleargst-frontend/misc/1567666883_mystories.gif)
+![my stories](https://assets1.cleartax-cdn.com/cleargst-frontend/misc/1567672934_mystories.gif)
 
 ### Fuzzy search
 
-![fuzzy search](https://assets1.cleartax-cdn.com/cleargst-frontend/misc/1567667018_pf_fuzzy.gif)
+![fuzzy search](https://assets1.cleartax-cdn.com/cleargst-frontend/misc/1567672849_fuzzy_search.gif)
 
 ### Adding a post-checkout hook
 
