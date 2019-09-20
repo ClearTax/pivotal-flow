@@ -2,6 +2,7 @@
 
 const { execSync } = require('child_process');
 const chalk = require('chalk');
+const { shouldSkipBranchCheck } = require('./utils');
 
 /* https://github.com/typicode/husky#access-git-params-and-stdin */
 const { HUSKY_GIT_PARAMS: params } = process.env;
@@ -13,7 +14,7 @@ const options = {
 const [prevHead, currentHead, checkoutType] = params.split(' ');
 
 // ignore if it is a file checkout. File checkout returns '0', branch checkout return '1'
-if (checkoutType === '0') {
+if (shouldSkipBranchCheck(prevHead, currentHead, checkoutType)) {
   process.exit(0);
 }
 // get the branch name after check out

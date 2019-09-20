@@ -138,6 +138,20 @@ const getStoryQuestions = stories => {
   ];
 };
 
+/**
+ * Skip the check in certain situations:-
+ * - when checking out a file
+ * - when checking out to a SHA
+ */
+const shouldSkipBranchCheck = (
+  /* checkout out from */
+  prevHead,
+  /* checkout out to */
+  currentHead,
+  /* checkoutType is 0 when it's a file checkout */
+  checkoutType
+) => checkoutType === '0' || prevHead === currentHead;
+
 module.exports = {
   isSetupDone,
   PIVOTAL_TOKEN,
@@ -147,4 +161,5 @@ module.exports = {
   formatLabels,
   suggestBranchName,
   getStoryQuestions,
+  shouldSkipBranchCheck,
 };
