@@ -7,4 +7,8 @@ const example = [
     name: 'git checkout 8da0bfffc570e8f2ad01cf91dfe1b124994fa068',
     params: '8da0bfffc570e8f2ad01cf91dfe1b124994fa068 8da0bfffc570e8f2ad01cf91dfe1b124994fa068 1',
   },
+  {
+    name: 'git checkout origin/master post-checkout.js',
+    params: '472c1137ca2bc3da76f83fdd1b665e9ada4e8b1b 472c1137ca2bc3da76f83fdd1b665e9ada4e8b1b 0',
+  },
 ];
