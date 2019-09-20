@@ -39,7 +39,7 @@
   "husky": {
     "hooks": {
       "pre-commit": "lint-staged",
-      "post-checkout": "./record-params.js"
+      "post-checkout": "./post-checkout.js -E HUSKY_GIT_PARAMS"
     }
   },
   "lint-staged": {
