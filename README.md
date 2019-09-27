@@ -63,6 +63,15 @@ Now, while checking out a new branch, you can ensure that the [Pivotal][pivotal]
 
 Using this alongside [`git-tracker`][git-tracker] and the [`Pivotal GitHub Integration`][pivotal-github] ensures your updates (commits, pushes, merges etc) on GitHub are posted directly and automatically to your Pivotal stories.
 
+### Working on multiple projects
+
+pivotal-flow supports working on multiple projects. You can do this by adding individual `PIVOTAL_PROJECT_ID` exports for each of your projects in your `.zshrc`, `.bashrc` or any other shell config, example:
+
+```
+export PIVOTAL_PROJECT_ID={project_id}
+export PIVOTAL_PROJECT_ID={project_id}
+```
+
 ### Other
 
 Follow instructions for [`git-tracker`][git-tracker] and the [`Pivotal GitHub Integration`][pivotal-github] to set-up the entire flow for your repository.
