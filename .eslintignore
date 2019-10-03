@@ -3,3 +3,4 @@
 .vscode
 .github
 node_modules
+dist
