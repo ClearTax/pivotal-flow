@@ -1,15 +1,9 @@
-#!/usr/bin/env node
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const meow_1 = __importDefault(require("meow"));
-const pivotal_flow_1 = __importDefault(require("./pivotal-flow"));
-const CLI_CONFIG = {};
-const cli = meow_1.default(`
-Usage: pivotal-flow [--version] [--help] <command> [<args>]
+import { Command } from 'commander';
 
+const addHelp = async (program: Command) => {
+  program.on('--help', () =>
+    console.log(
+      `
 Available commands in pivotal-flow:
 
   Check which version of pivotal-flow is installed:
@@ -30,6 +24,9 @@ Hooks:
 
   Check for Pivotal Story ID presence in every commit message via the
   commit-msg hook via husky:
-  $ pivotal-flow prepare-commit-msg
-`, CLI_CONFIG);
-pivotal_flow_1.default(cli);
+  $ pivotal-flow prepare-commit-msg`
+    )
+  );
+};
+
+export default addHelp;
