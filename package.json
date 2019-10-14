@@ -12,19 +12,15 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "lint": "eslint .",
-    "lint:fix": "npm run lint -- --fix"
+    "lint:fix": "npm run lint -- --fix",
+    "build": "rm -rf dist && tsc",
+    "start": "tsc --watch"
   },
   "files": [
     "dist"
   ],
   "bin": {
-    "pivotal-flow": "index.js",
-    "pivotal-flow-start": "index.js",
-    "pivotal-flow-check": "./hooks/post-checkout/index.js",
-    "pivotal-flow-prepare-commit-msg": "./hooks/prepare-commit-msg/index.js",
-    "pivotal-flow-commit-msg": "./hooks/commit-msg/index.js",
-    "pfs": "index.js",
-    "pf": "index.js"
+    "pivotal-flow": "dist/cli.js"
   },
   "repository": {
     "type": "git",
@@ -70,16 +66,23 @@
     "@sindresorhus/slugify": "^0.9.1",
     "axios": "^0.19.0",
     "chalk": "^2.4.2",
+    "commander": "^3.0.2",
     "fuzzy": "^0.1.3",
     "inquirer": "^7.0.0",
     "inquirer-autocomplete-prompt": "^1.0.1",
     "meow": "^5.0.0"
   },
   "devDependencies": {
+    "@types/eslint": "^6.1.2",
+    "@types/eslint-plugin-prettier": "^2.2.0",
     "@types/meow": "^5.0.0",
-    "eslint": "^6.3.0",
-    "eslint-config-prettier": "^6.2.0",
-    "eslint-plugin-prettier": "^3.1.0",
+    "@typescript-eslint/eslint-plugin": "^2.3.3",
+    "@typescript-eslint/parser": "^2.3.3",
+    "eslint": "^6.5.1",
+    "eslint-config-prettier": "^6.4.0",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-lodash": "^6.0.0",
+    "eslint-plugin-prettier": "^3.1.1",
     "husky": "^3.0.5",
     "jest": "^24.9.0",
     "lint-staged": "^9.2.5",
