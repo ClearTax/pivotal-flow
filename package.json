@@ -75,6 +75,7 @@
   "devDependencies": {
     "@types/eslint": "^6.1.2",
     "@types/eslint-plugin-prettier": "^2.2.0",
+    "@types/inquirer": "^6.5.0",
     "@types/meow": "^5.0.0",
     "@typescript-eslint/eslint-plugin": "^2.3.3",
     "@typescript-eslint/parser": "^2.3.3",
