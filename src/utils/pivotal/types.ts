@@ -91,6 +91,7 @@ export interface PivotalStory {
    * Story labels.
    */
   labels: Label[];
+  owner_ids: number[];
   current_state?: StoryState;
 }
 
@@ -98,10 +99,23 @@ export interface PivotalStoryResponse extends PivotalStory {
   kind: 'story';
   readonly id: number;
   readonly labels: LabelResponse[];
-  readonly owner_ids: number[];
   readonly project_id: number;
   readonly url: string;
 
   readonly created_at: string;
   readonly updated_at: string;
+}
+
+export interface GetStoriesResponse {
+  stories: {
+    stories: PivotalStoryResponse[];
+    total_points: number;
+    total_points_completed: number;
+    total_hits: number;
+    total_hits_with_done: number;
+  };
+  epics: {
+    epics: any[];
+  };
+  query: string;
 }

@@ -52,6 +52,34 @@ export default class PivotalClient {
   }
 
   /**
+   * Fetch stories based on project and pivotal query
+   * @param {string} query - pivotal search query-string
+   */
+  async getStories(query: string) {
+    try {
+      const { data } = await this.restClient.get<PivotalProfile>(`/projects/${this.PROJECT_ID}/search?query=${query}`);
+      return data;
+    } catch (errorResponse) {
+      this.logErrorMessage(errorResponse, 'fetching stories');
+      throw errorResponse;
+    }
+  }
+
+  /**
+   * Get a single story's details.
+   * @param id {number} Story id
+   */
+  async getStory(id: number) {
+    try {
+      const { data } = await this.restClient.get<PivotalStoryResponse>(`/projects/${this.PROJECT_ID}/stories/${id}`);
+      return data;
+    } catch (errorResponse) {
+      this.logErrorMessage(errorResponse, 'fetching story');
+      throw errorResponse;
+    }
+  }
+
+  /**
    * Create a story in the current project.
    * @param {PivotalStory} story
    */
@@ -64,6 +92,24 @@ export default class PivotalClient {
       throw errorResponse;
     }
   }
+
+  /**
+   * Update a single story's details.
+   * @param id {number} story id
+   * @param story {PivotalStory} story details to be updated
+   */
+  async updateStory(id: number, story: Partial<PivotalStory>) {
+    try {
+      const { data } = await this.restClient.put<PivotalStoryResponse>(
+        `/projects/${this.PROJECT_ID}/stories/${id}`,
+        story
+      );
+      return data;
+    } catch (errorResponse) {
+      this.logErrorMessage(errorResponse, 'updating story');
+      throw errorResponse;
+    }
+  }
 }
 
 // (async () => {
@@ -72,12 +118,5 @@ export default class PivotalClient {
 //     API_TOKEN: process.env.PIVOTAL_TOKEN as string,
 //     PROJECT_ID: process.env.PIVOTAL_PROJECT_ID as string,
 //   });
-//   console.log(
-//     await client.createStory({
-//       name: `Test Story (${Date.now()})`,
-//       story_type: StoryType.Chore,
-//       // estimate: 0,
-//       labels: [{ name: 'test-pivotal-flow' }],
-//     })
-//   );
+//   console.log(serialize(await client.getStories(`mywork:"${2714693}" AND state:unstarted,planned`), { space: 2 }));
 // })();
