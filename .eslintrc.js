@@ -40,5 +40,6 @@ module.exports = {
     'import/no-unresolved': 'error',
     /** Allow only method imports for lodash */
     'lodash/import-scope': ['error', 'method'],
+    '@typescript-eslint/camelcase': 'off',
   },
 };
