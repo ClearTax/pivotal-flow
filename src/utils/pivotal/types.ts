@@ -1,4 +1,4 @@
-export const enum StoryType {
+export enum StoryType {
   Feature = 'feature',
   Bug = 'bug',
   Chore = 'chore',
@@ -29,6 +29,34 @@ export interface PivotalProject {
   project_id: number;
   project_name: string;
   project_color: string;
+}
+
+export interface PivotalProjectResponse {
+  kind: 'project';
+  name: string;
+
+  automatic_planning: boolean;
+  bugs_and_chores_are_estimatable: boolean;
+  created_at: string;
+
+  // eg: '0,1,2,3'
+  point_scale: string;
+  point_scale_is_custom: boolean;
+
+  current_iteration_number: number;
+  description?: string;
+  enable_tasks: boolean;
+  id: number;
+  initial_velocity: number;
+  iteration_length: number;
+  project_type: 'private' | 'public';
+  public: boolean;
+  start_date: string;
+  start_time: string;
+  updated_at: string;
+  velocity_averaged_over: number;
+  version: number;
+  week_start_day: 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday' | 'Sunday';
 }
 
 /**
@@ -119,3 +147,9 @@ export interface GetStoriesResponse {
   };
   query: string;
 }
+
+export const PointScales = {
+  linear: [0, 1, 2, 3],
+  fibonacci: [0, 1, 2, 3, 5, 8],
+  powers_of_two: [0, 1, 2, 4, 8],
+};

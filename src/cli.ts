@@ -11,7 +11,7 @@ import addHelp from './commands/help';
   program.name('pivotal-flow').description(`Automate your pivotal workflow.`);
 
   // add global options
-  program.option('--debug', 'Debug pivotal -flow');
+  program.option('--debug', 'Debug pivotal-flow');
   await addVersion(program);
   await addHelp(program);
 
