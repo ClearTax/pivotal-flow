@@ -5,8 +5,6 @@ import { Command } from 'commander';
 import addVersion from './commands/version';
 import addHelp from './commands/help';
 
-// import pivotalFlow from './pivotal-flow';
-
 (async () => {
   const program = new Command();
 
@@ -19,8 +17,10 @@ import addHelp from './commands/help';
 
   // add commands
   program.command('init', 'Set-up pivotal-flow', { executableFile: './commands/init/index' });
-  // .command('start', 'Start working on Pivotal Story', { executableFile: './commands/start', isDefault: true })
-  // .alias('s');
+
+  program
+    .command('start', 'Start working on a story', { executableFile: './commands/start/index', isDefault: true })
+    .alias('s');
 
   // parse at the end
   program.parse(process.argv);
