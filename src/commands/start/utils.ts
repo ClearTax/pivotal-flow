@@ -130,8 +130,8 @@ export const getWorkflow = async ({ newStory }: { newStory: boolean }) => {
   if (newStory === true) {
     return StartStoryOption.New;
   }
-  const { selected } = await inquirer.prompt(StartStoryQuestions);
-  return selected;
+  const { selection } = await inquirer.prompt(StartStoryQuestions);
+  return selection;
 };
 
 export const getStoryToWorkOn = async (client: PivotalClient, owner: PivotalProfile, workflow: StartStoryOption) => {

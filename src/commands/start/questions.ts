@@ -7,7 +7,7 @@ import { HelpWorkOnNewStory, HelpSelectStoryFromList } from './helpText';
 import { getSearchableStoryListSource } from './utils';
 
 export interface StartStoryAnswers {
-  selected: StartStoryOption;
+  selection: StartStoryOption;
 }
 
 export const StartStoryQuestions: QuestionCollection<StartStoryAnswers> = [
@@ -15,6 +15,7 @@ export const StartStoryQuestions: QuestionCollection<StartStoryAnswers> = [
     type: 'list',
     name: 'selection',
     message: 'What do you want to do?',
+    default: 0,
     choices: [
       { name: 'Create a new story & start working on it', value: StartStoryOption.New },
       { name: 'Work on a story assigned to you', value: StartStoryOption.Owned },
