@@ -1,8 +1,10 @@
 import memoize from 'fast-memoize';
 
+import { PIVOTAL_ID_IN_STRING } from '../../regex';
 import { StoryType, StoryState, PivotalStoryResponse } from './types';
 import { slugifyName } from '../string';
 import PivotalClient from './client';
+import { inDetachedHeadState, getCurrentBranch } from '../git';
 
 const UNSTARTED_STORY_STATES = [StoryState.Planned, StoryState.Rejected, StoryState.Unscheduled, StoryState.Unstarted];
 
@@ -73,4 +75,39 @@ export const moveStoryToStartedState = async (client: PivotalClient, story: Pivo
   return client.updateStory(story.id, {
     current_state: StoryState.Started,
   });
+};
+
+export interface GetStoryIdResults {
+  found: boolean;
+  id: string;
+  formatted: string;
+}
+
+/**
+ * Get the Pivotal story id details from any input string.
+ */
+export const getStoryId = (
+  /** any string input to search for story id In */
+  input: string
+): GetStoryIdResults => {
+  const matches = input.match(PIVOTAL_ID_IN_STRING) || [''];
+  const [matched] = matches;
+
+  const storyId = matched.startsWith('#') ? matched.substring(1) : matched;
+  const formatted = `#${storyId}`;
+  const found = Boolean(storyId);
+
+  return { found, id: storyId, formatted };
+};
+
+/**
+ * Get the Pivotal story id (if it exists) details from the current branch name.
+ */
+export const getStoryIfFromCurrentBranch = (): GetStoryIdResults => {
+  if (inDetachedHeadState()) {
+    return { found: false, id: '', formatted: '' };
+  }
+
+  const branch = getCurrentBranch() || '';
+  return getStoryId(branch);
 };

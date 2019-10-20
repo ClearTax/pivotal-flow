@@ -1,5 +1,7 @@
 import { execSync } from 'child_process';
+import { resolve } from 'path';
 
+import { readFileSync, writeFileSync } from 'fs';
 import { debugLogObject } from './console';
 
 /**
@@ -52,3 +54,16 @@ export const isNewBranch = (prevHead: string, currentHead: string, branch: strin
   prevHead === currentHead && getCheckoutCount(branch || '') === 1;
 
 export const checkoutNewBranch = (branchName: string) => execSync(`git checkout -b ${branchName}`);
+
+/**
+ * Get contents of commit message file
+ */
+export const getCommitMessage = (filename: string) => readFileSync(filename, { encoding: 'utf8' });
+
+/**
+ * Write the final commit message to the filename provided.
+ */
+export const writeCommitMessage = (filename: string, message: string) => {
+  const gitRootDirectory = getRootDirectory();
+  return writeFileSync(resolve(gitRootDirectory, filename), message, { encoding: 'utf8' });
+};

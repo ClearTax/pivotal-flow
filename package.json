@@ -47,7 +47,10 @@
   "license": "MIT",
   "husky": {
     "hooks": {
-      "commit-msg": "node -r ts-node/register src/cli.ts hook commit-msg"
+      "pre-commit": "lint-staged",
+      "commit-msg": "node -r ts-node/register src/cli.ts hook commit-msg",
+      "post-checkout": "node -r ts-node/register src/cli.ts hook post-checkout",
+      "prepare-commit-msg": "node -r ts-node/register src/cli.ts hook prepare-commit-msg"
     }
   },
   "lint-staged": {
