@@ -16,11 +16,6 @@ export const enum StoryState {
   Unstarted = 'unstarted',
 }
 
-export interface PivotalClientOptions {
-  API_TOKEN: string;
-  PROJECT_ID: string;
-}
-
 /**
  * Pivotal Project Information
  */
@@ -118,7 +113,7 @@ export interface PivotalStory {
   /**
    * Story labels.
    */
-  labels: Label[];
+  labels: Label[] | string[];
   owner_ids: number[];
   current_state?: StoryState;
 }

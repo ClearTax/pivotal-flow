@@ -1,9 +1,10 @@
 import Axios, { AxiosInstance, AxiosError } from 'axios';
 import serialize, { SerializeJSOptions } from 'serialize-javascript';
+import ora = require('ora');
 
-import { PivotalClientOptions, PivotalProfile, PivotalStory, PivotalStoryResponse } from './types';
+import { isSetupComplete } from '../../commands/init/utils';
+import { PivotalProfile, PivotalStory, PivotalStoryResponse, GetStoriesResponse } from './types';
 import { error as logError } from '../console';
-
 export default class PivotalClient {
   private restClient: AxiosInstance;
   private API_TOKEN: string;
@@ -12,9 +13,13 @@ export default class PivotalClient {
     space: 2,
   };
 
-  constructor(options: PivotalClientOptions) {
-    this.API_TOKEN = options.API_TOKEN;
-    this.PROJECT_ID = options.PROJECT_ID;
+  constructor() {
+    if (!isSetupComplete()) {
+      throw new Error('Setup incomplete');
+    }
+
+    this.API_TOKEN = process.env.PIVOTAL_TOKEN as string;
+    this.PROJECT_ID = process.env.PIVOTAL_PROJECT_ID as string;
 
     this.restClient = Axios.create({
       baseURL: 'https://www.pivotaltracker.com/services/v5',
@@ -23,18 +28,25 @@ export default class PivotalClient {
     });
   }
 
-  logErrorMessage(axiosError: AxiosError, operation: string) {
+  getSpinner(label: string) {
+    return ora({
+      color: 'cyan',
+      text: label,
+    });
+  }
+
+  logErrorMessage(axiosError: AxiosError) {
     const { response, request } = axiosError;
     if (response) {
       // non-2xx response
       const { status, data, statusText } = response;
-      logError(`${operation}: Error - ${serialize({ status, data, statusText }, this.SERIALIZE_ERROR_OPTIONS)}`);
+      logError(`Error - ${serialize({ status, data, statusText }, this.SERIALIZE_ERROR_OPTIONS)}`);
     } else if (request) {
       // network error
-      logError(`${operation}: NetworkError - ${serialize(request, this.SERIALIZE_ERROR_OPTIONS)})}`);
+      logError(`NetworkError - ${serialize(request, this.SERIALIZE_ERROR_OPTIONS)})}`);
     } else {
       // Something happened in setting up the request that triggered an Error
-      logError(`${operation}: Unknown Error - ${axiosError.message}`);
+      logError(`Unknown Error - ${axiosError.message}`);
     }
   }
 
@@ -46,7 +58,7 @@ export default class PivotalClient {
       const { data } = await this.restClient.get<PivotalProfile>('/me');
       return data;
     } catch (errorResponse) {
-      this.logErrorMessage(errorResponse, 'fetching your profile');
+      this.logErrorMessage(errorResponse);
       throw errorResponse;
     }
   }
@@ -57,10 +69,12 @@ export default class PivotalClient {
    */
   async getStories(query: string) {
     try {
-      const { data } = await this.restClient.get<PivotalProfile>(`/projects/${this.PROJECT_ID}/search?query=${query}`);
+      const { data } = await this.restClient.get<GetStoriesResponse>(
+        `/projects/${this.PROJECT_ID}/search?query=${query}`
+      );
       return data;
     } catch (errorResponse) {
-      this.logErrorMessage(errorResponse, 'fetching stories');
+      this.logErrorMessage(errorResponse);
       throw errorResponse;
     }
   }
@@ -74,7 +88,7 @@ export default class PivotalClient {
       const { data } = await this.restClient.get<PivotalStoryResponse>(`/projects/${this.PROJECT_ID}/stories/${id}`);
       return data;
     } catch (errorResponse) {
-      this.logErrorMessage(errorResponse, 'fetching story');
+      this.logErrorMessage(errorResponse);
       throw errorResponse;
     }
   }
@@ -84,11 +98,17 @@ export default class PivotalClient {
    * @param {PivotalStory} story
    */
   async createStory(story: PivotalStory) {
+    const label = 'Creating story';
+    const spinner = this.getSpinner(label);
+
     try {
+      spinner.start();
       const { data } = await this.restClient.post<PivotalStoryResponse>(`/projects/${this.PROJECT_ID}/stories`, story);
+      spinner.succeed('Story created successfully');
       return data;
     } catch (errorResponse) {
-      this.logErrorMessage(errorResponse, 'creating story');
+      spinner.fail('Failed to create a story.');
+      this.logErrorMessage(errorResponse);
       throw errorResponse;
     }
   }
@@ -106,7 +126,7 @@ export default class PivotalClient {
       );
       return data;
     } catch (errorResponse) {
-      this.logErrorMessage(errorResponse, 'updating story');
+      this.logErrorMessage(errorResponse);
       throw errorResponse;
     }
   }

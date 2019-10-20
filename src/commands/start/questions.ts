@@ -1,14 +1,16 @@
 import { QuestionCollection } from 'inquirer';
 
+import { getStoryTypeChoices } from '../../utils/pivotal/common';
 import { StartStoryOption } from './types';
-import { StoryType, PointScales } from '../../utils/pivotal/types';
-import { HelpWorkOnNewStory } from './helpText';
+import { StoryType, PointScales, PivotalStoryResponse } from '../../utils/pivotal/types';
+import { HelpWorkOnNewStory, HelpSelectStoryFromList } from './helpText';
+import { getSearchableStoryListSource } from './utils';
 
 export interface StartStoryAnswers {
   selected: StartStoryOption;
 }
 
-export const StartStoryQuestion: QuestionCollection<StartStoryAnswers> = [
+export const StartStoryQuestions: QuestionCollection<StartStoryAnswers> = [
   {
     type: 'list',
     name: 'selection',
@@ -24,9 +26,10 @@ export const StartStoryQuestion: QuestionCollection<StartStoryAnswers> = [
 export interface WorkOnNewStoryAnswers {
   story_type: StoryType;
   name: string;
-  estimate: number;
   labelNames: string;
   promptDescription: boolean;
+  estimate?: number;
+  description?: string;
 }
 
 export const WorkOnNewStoryQuestions: QuestionCollection<WorkOnNewStoryAnswers> = [
@@ -34,24 +37,7 @@ export const WorkOnNewStoryQuestions: QuestionCollection<WorkOnNewStoryAnswers> 
     type: 'list',
     name: 'story_type',
     message: 'Story Type:',
-    choices: [
-      {
-        value: StoryType.Feature,
-        name: `⭐️ ${StoryType.Feature}`,
-      },
-      {
-        value: StoryType.Bug,
-        name: `🐞 ${StoryType.Bug}`,
-      },
-      {
-        value: StoryType.Chore,
-        name: `⚙️  ${StoryType.Chore}`,
-      },
-      {
-        value: StoryType.Release,
-        name: `🏁 ${StoryType.Release}`,
-      },
-    ],
+    choices: getStoryTypeChoices(),
     default: 0, // 0 --> index in the choices[]
     prefix: HelpWorkOnNewStory.story_type,
   },
@@ -97,5 +83,21 @@ export const WorkOnNewStoryQuestions: QuestionCollection<WorkOnNewStoryAnswers> 
     message: 'Story Description',
     when: answers => answers.promptDescription === true,
     default: '\n<!-- add a description here -->',
+  },
+];
+
+export interface SelectStoryFromListAnswers {
+  story: PivotalStoryResponse;
+}
+
+export const getSelectStoryFromListQuestions = (
+  stories: PivotalStoryResponse[]
+): QuestionCollection<SelectStoryFromListAnswers> => [
+  {
+    type: 'autocomplete',
+    name: 'story',
+    prefix: HelpSelectStoryFromList,
+    message: 'Pick a story to work on',
+    source: getSearchableStoryListSource(stories),
   },
 ];

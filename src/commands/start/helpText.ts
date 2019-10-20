@@ -36,3 +36,5 @@ You can add a short description of functionality or an incremental piece of capa
 Press Enter to skip.
 `),
 };
+
+export const HelpSelectStoryFromList = questionHelp(`You can also search by story name or story id \n`);
