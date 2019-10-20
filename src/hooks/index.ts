@@ -1,5 +1,5 @@
 import { HookOptions } from '../models/hooks';
-import { error } from '../utils/console';
+import { debugLogObject } from '../utils/console';
 
 import { parseHookParams } from '../utils/hooks';
 
@@ -14,6 +14,8 @@ const handlers: { [k: string]: Function } = {
 
 export default async function(hookType: string, options: HookOptions) {
   try {
+    debugLogObject('hook-runner', { hookType });
+
     if (typeof handlers[hookType] !== 'function') {
       throw new Error(`Invalid hook: ${hookType}`);
     }
@@ -21,7 +23,7 @@ export default async function(hookType: string, options: HookOptions) {
     const params = parseHookParams(options);
     await handlers[hookType](...params);
   } catch (e) {
-    error(e);
+    debugLogObject('error running hook', e);
     process.exit(1);
   }
 

@@ -19,7 +19,6 @@ import runHook from './hooks';
   // add commands
   program.command('init', 'Set-up pivotal-flow', { executableFile: './commands/init/index' });
 
-  // program.command('hook <hookType>', 'Execute a hook (via husky)', { executableFile: './hooks/index' });
   program
     .command('hook <type>')
     .description('Execute a hook (via husky)')
