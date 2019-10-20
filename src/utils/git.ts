@@ -50,3 +50,5 @@ export const getCheckoutCount = (ref = '') => {
  */
 export const isNewBranch = (prevHead: string, currentHead: string, branch: string) =>
   prevHead === currentHead && getCheckoutCount(branch || '') === 1;
+
+export const checkoutNewBranch = (branchName: string) => execSync(`git checkout -b ${branchName}`);

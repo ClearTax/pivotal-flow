@@ -1,7 +1,14 @@
 import Table from 'cli-table';
 import { filter } from 'fuzzy';
 
-import { getStoryTypeLabel, getStoryTypeIcon } from '../../utils/pivotal/common';
+import { checkoutNewBranch } from '../../utils/git';
+import {
+  getStoryTypeLabel,
+  getStoryTypeIcon,
+  getStoryBranchName,
+  isUnstartedStory,
+  moveStoryToStartedState,
+} from '../../utils/pivotal/common';
 import {
   PivotalStory,
   StoryState,
@@ -9,7 +16,7 @@ import {
   LabelResponse,
   PivotalProfile,
 } from '../../utils/pivotal/types';
-import { StartStoryWorkflow } from './types';
+import { StartStoryWorkflow, StartStoryAction } from './types';
 import {
   PickStoryWorkflowQuestions,
   WorkOnNewStoryAnswers,
@@ -19,7 +26,7 @@ import {
 } from './questions';
 import inquirer from '../../utils/inquirer';
 import PivotalClient from '../../utils/pivotal/client';
-import { truncate } from '../../utils/string';
+import { truncate, slugifyName } from '../../utils/string';
 
 /**
  * Parse the labels string into a list of labels
@@ -175,8 +182,20 @@ export const getSearchableStoryListSource = (
   return source;
 };
 
-export const startWorkingOnStory = async (story: PivotalStoryResponse) => {
-  const answers = await inquirer.prompt(getStartStoryQuestions(story));
-  console.log(answers);
-  return answers;
+export const startWorkingOnStory = async (client: PivotalClient, story: PivotalStoryResponse) => {
+  const { actions, branchName: branchNameInput } = await inquirer.prompt(getStartStoryQuestions(story));
+  const { story_type, id } = story;
+
+  if (actions.includes(StartStoryAction.MoveToStartedState) && isUnstartedStory(story.current_state)) {
+    // move to started state
+    await moveStoryToStartedState(client, story);
+  }
+
+  if (actions.includes(StartStoryAction.CheckoutNewBranch)) {
+    const slugifiedBranchName = slugifyName(branchNameInput);
+    const branchName = getStoryBranchName(slugifiedBranchName, story_type, id);
+    checkoutNewBranch(branchName);
+  }
+
+  return;
 };

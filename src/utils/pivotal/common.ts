@@ -1,7 +1,10 @@
 import memoize from 'fast-memoize';
 
-import { StoryType } from './types';
+import { StoryType, StoryState, PivotalStoryResponse } from './types';
 import { slugifyName } from '../string';
+import PivotalClient from './client';
+
+const UNSTARTED_STORY_STATES = [StoryState.Planned, StoryState.Rejected, StoryState.Unscheduled, StoryState.Unstarted];
 
 export const getStoryTypeIcon = (type: StoryType) => {
   switch (type) {
@@ -56,3 +59,18 @@ export const getStoryBranchName = memoize((
   const slugifiedName = slugifyName(name);
   return `${prefix}/${slugifiedName}_${id}`;
 });
+
+/**
+ * Check if the story has not been marked as started.
+ */
+export const isUnstartedStory = (currentState: PivotalStoryResponse['current_state']) =>
+  currentState && UNSTARTED_STORY_STATES.includes(currentState);
+
+/**
+ * Move an existing story to the 'started' state.
+ */
+export const moveStoryToStartedState = async (client: PivotalClient, story: PivotalStoryResponse) => {
+  return client.updateStory(story.id, {
+    current_state: StoryState.Started,
+  });
+};

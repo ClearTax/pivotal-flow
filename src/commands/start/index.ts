@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
+import serialize from 'serialize-javascript';
 
+import { error } from '../../utils/console';
 import { abortIfNotSetup } from '../init/utils';
 import PivotalClient from '../../utils/pivotal/client';
 import { getWorkflow, getStoryToWorkOn, startWorkingOnStory } from './utils';
@@ -15,23 +17,16 @@ import { getWorkflow, getStoryToWorkOn, startWorkingOnStory } from './utils';
 
   await abortIfNotSetup();
   try {
-    // await startWorkingOnStory({
-    //   story_type: 'feature',
-    //   name: 'this be the story name',
-    //   id: 12345678,
-    // } as PivotalStoryResponse);
-    // process.exit(0);
-
     const { newStory = false } = program;
     const workflow = await getWorkflow({ newStory: newStory as boolean });
 
     const client = new PivotalClient();
     const profile = await client.getProfile();
     const story = await getStoryToWorkOn(client, profile, workflow);
-    await startWorkingOnStory(story);
-    process.exit(0);
+    await startWorkingOnStory(client, story);
   } catch (e) {
-    console.log(e);
+    error(serialize(e, { space: 2 }));
     process.exit(1);
   }
+  process.exit(0);
 })();

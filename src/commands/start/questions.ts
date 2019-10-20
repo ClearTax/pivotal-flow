@@ -106,6 +106,7 @@ export const getSelectStoryFromListQuestions = (
 
 export interface StartStoryAnswers {
   actions: StartStoryAction[];
+  branchName: string;
 }
 
 export const getStartStoryQuestions = (story: PivotalStoryResponse): QuestionCollection<StartStoryAnswers> => {
