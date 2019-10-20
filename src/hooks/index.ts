@@ -5,9 +5,11 @@ import { parseHookParams } from '../utils/hooks';
 
 // hooks
 import recordParams from './record-params';
+import commitMsgHook from './commit-msg';
 
 const handlers: { [k: string]: Function } = {
   'record-params': recordParams,
+  'commit-msg': commitMsgHook,
 };
 
 export default async function(hookType: string, options: HookOptions) {
