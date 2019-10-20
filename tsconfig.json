@@ -20,7 +20,8 @@
     "baseUrl": "./" /* Base directory to resolve non-absolute module names. */,
     "esModuleInterop": true /* Enables emit interoperability between CommonJS and ES Modules via creation of namespace objects for all imports. Implies 'allowSyntheticDefaultImports'. */,
     "resolveJsonModule": true,
-    "sourceMap": true
+    "sourceMap": true,
+    "types": ["jest"]
   },
   "exclude": ["node_modules", "**/*.test.ts"]
 }

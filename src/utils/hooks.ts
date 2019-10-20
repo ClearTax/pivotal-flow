@@ -1,5 +1,5 @@
 import { HookOptions } from '../models/hooks';
-import { debugLogObject } from './console';
+import { debugLogObject, debugLog } from './console';
 import { inDetachedHeadState } from './git';
 import { getStoryId } from './pivotal/common';
 
@@ -35,6 +35,11 @@ export const shouldSkipBranchCheck = (
   }
 
   debugLogObject('head references', { prevHead, currentHead });
+
+  if (prevHead === currentHead) {
+    debugLog('skipped due same prevHead & currentHead');
+    return true;
+  }
 
   // if we're in a detached head state (eg. submodule checkout or rebase)
   const detachedState = inDetachedHeadState();

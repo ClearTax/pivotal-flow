@@ -1,8 +1,7 @@
 {
   "name": "pivotal-flow",
   "version": "1.1.0",
-  "description": "Automate your pivotal workflow",
-  "main": "index.js",
+  "description": "Automate your pivotal workflow 🔀.",
   "engines": {
     "node": ">=8",
     "npm": ">=6.8.0",
@@ -20,7 +19,8 @@
     "dist"
   ],
   "bin": {
-    "pivotal-flow": "dist/cli.js"
+    "pivotal-flow": "dist/cli.js",
+    "pf": "dist/cli.js"
   },
   "repository": {
     "type": "git",
@@ -43,7 +43,7 @@
     "url": "https://github.com/ClearTax/pivotal-flow/issues"
   },
   "homepage": "https://github.com/ClearTax/pivotal-flow#readme",
-  "author": "Raj Anand",
+  "author": "ClearTax Engineering",
   "license": "MIT",
   "husky": {
     "hooks": {
@@ -58,7 +58,7 @@
       "prettier --write",
       "git add"
     ],
-    "**/*.{js}": [
+    "**/*.{ts,js}": [
       "eslint --fix",
       "git add"
     ]
@@ -82,6 +82,7 @@
     "@types/eslint": "^6.1.2",
     "@types/eslint-plugin-prettier": "^2.2.0",
     "@types/inquirer": "^6.5.0",
+    "@types/jest": "^24.0.19",
     "@types/meow": "^5.0.0",
     "@types/serialize-javascript": "^1.5.0",
     "@typescript-eslint/eslint-plugin": "^2.3.3",
@@ -95,6 +96,7 @@
     "jest": "^24.9.0",
     "lint-staged": "^9.2.5",
     "prettier": "^1.18.2",
+    "ts-jest": "^24.1.0",
     "ts-node": "^8.4.1",
     "typescript": "^3.6.3"
   }
