@@ -38,3 +38,18 @@ Press Enter to skip.
 };
 
 export const HelpSelectStoryFromList = questionHelp(`You can also search by story name or story id \n`);
+
+export const HelpStartStory = {
+  actions: (storyDetails: string) => `${storyDetails}\n`,
+  branchName: (suggestedBranch: string) =>
+    questionHelp(`
+The story type & story ID will be automatically added to the branch name.
+
+We've automatically generated the branch name as the following based on the story details:
+
+  '${chalk.bold(suggestedBranch)}'
+
+Simply ${chalk.underline('press enter')} to use the ${chalk.underline('generated value')} as the new branch name,
+else start typing to write your own branch name.
+\n`),
+};

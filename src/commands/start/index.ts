@@ -3,7 +3,7 @@ import { Command } from 'commander';
 
 import { abortIfNotSetup } from '../init/utils';
 import PivotalClient from '../../utils/pivotal/client';
-import { getWorkflow, getStoryToWorkOn, displayStoryDetails } from './utils';
+import { getWorkflow, getStoryToWorkOn, startWorkingOnStory } from './utils';
 
 (async () => {
   const program = new Command();
@@ -15,15 +15,23 @@ import { getWorkflow, getStoryToWorkOn, displayStoryDetails } from './utils';
 
   await abortIfNotSetup();
   try {
+    // await startWorkingOnStory({
+    //   story_type: 'feature',
+    //   name: 'this be the story name',
+    //   id: 12345678,
+    // } as PivotalStoryResponse);
+    // process.exit(0);
+
     const { newStory = false } = program;
     const workflow = await getWorkflow({ newStory: newStory as boolean });
 
     const client = new PivotalClient();
     const profile = await client.getProfile();
     const story = await getStoryToWorkOn(client, profile, workflow);
-    displayStoryDetails(story);
+    await startWorkingOnStory(story);
     process.exit(0);
   } catch (e) {
+    console.log(e);
     process.exit(1);
   }
 })();

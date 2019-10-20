@@ -1,25 +1,26 @@
 import { QuestionCollection } from 'inquirer';
 
-import { getStoryTypeChoices } from '../../utils/pivotal/common';
-import { StartStoryOption } from './types';
+import { slugifyName } from '../../utils/string';
+import { getStoryTypeChoices, getStoryBranchName } from '../../utils/pivotal/common';
+import { StartStoryWorkflow, StartStoryAction } from './types';
 import { StoryType, PointScales, PivotalStoryResponse } from '../../utils/pivotal/types';
-import { HelpWorkOnNewStory, HelpSelectStoryFromList } from './helpText';
-import { getSearchableStoryListSource } from './utils';
+import { HelpWorkOnNewStory, HelpSelectStoryFromList, HelpStartStory } from './helpText';
+import { getSearchableStoryListSource, getStoryDetailsAsTable } from './utils';
 
-export interface StartStoryAnswers {
-  selection: StartStoryOption;
+export interface PickStoryWorkflowAnswers {
+  selection: StartStoryWorkflow;
 }
 
-export const StartStoryQuestions: QuestionCollection<StartStoryAnswers> = [
+export const PickStoryWorkflowQuestions: QuestionCollection<PickStoryWorkflowAnswers> = [
   {
     type: 'list',
     name: 'selection',
     message: 'What do you want to do?',
     default: 0,
     choices: [
-      { name: 'Create a new story & start working on it', value: StartStoryOption.New },
-      { name: 'Work on a story assigned to you', value: StartStoryOption.Owned },
-      { name: 'Work on any other story', value: StartStoryOption.Unassigned },
+      { name: 'Create a new story & start working on it', value: StartStoryWorkflow.New },
+      { name: 'Work on a story assigned to you', value: StartStoryWorkflow.Owned },
+      { name: 'Work on any other story', value: StartStoryWorkflow.Unassigned },
     ],
   },
 ];
@@ -102,3 +103,51 @@ export const getSelectStoryFromListQuestions = (
     source: getSearchableStoryListSource(stories),
   },
 ];
+
+export interface StartStoryAnswers {
+  actions: StartStoryAction[];
+}
+
+export const getStartStoryQuestions = (story: PivotalStoryResponse): QuestionCollection<StartStoryAnswers> => {
+  const { story_type: type, id, name } = story;
+  const slugifiedStoryName = slugifyName(name);
+  const suggestedBranchName = getStoryBranchName(slugifiedStoryName, type, id);
+  const storyTable = getStoryDetailsAsTable(story);
+  return [
+    {
+      type: 'checkbox',
+      name: 'actions',
+      message: `\n\nSelect the actions you'd like to take:`,
+      prefix: HelpStartStory.actions(storyTable),
+      choices: [
+        {
+          name: 'Checkout a new branch for this story',
+          short: 'checkout-new-branch',
+          value: StartStoryAction.CheckoutNewBranch,
+          checked: true,
+        },
+        {
+          name: `Move story to 'started state' (if in 'unplanned/unstarted' state)`,
+          short: 'move-to-started',
+          value: StartStoryAction.MoveToStartedState,
+          checked: false,
+        },
+      ],
+    },
+    {
+      type: 'input',
+      name: 'branchName',
+      message: 'Branch Name:',
+      prefix: HelpStartStory.branchName(suggestedBranchName),
+      when: answers => answers.actions.includes(StartStoryAction.CheckoutNewBranch),
+      transformer: (input: string) => getStoryBranchName(input || slugifiedStoryName, type, id),
+      default: slugifiedStoryName,
+      validate: (input: string) => {
+        if (!input || input.length < 8 || input.length > 25) {
+          return 'Please limit the branch name (excluding story-type & story-id) to between 8-25 characters.';
+        }
+        return true;
+      },
+    },
+  ];
+};

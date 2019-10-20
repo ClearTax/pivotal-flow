@@ -9,12 +9,13 @@ import {
   LabelResponse,
   PivotalProfile,
 } from '../../utils/pivotal/types';
-import { StartStoryOption } from './types';
+import { StartStoryWorkflow } from './types';
 import {
+  PickStoryWorkflowQuestions,
   WorkOnNewStoryAnswers,
   WorkOnNewStoryQuestions,
-  StartStoryQuestions,
   getSelectStoryFromListQuestions,
+  getStartStoryQuestions,
 } from './questions';
 import inquirer from '../../utils/inquirer';
 import PivotalClient from '../../utils/pivotal/client';
@@ -67,7 +68,7 @@ export const getNewStoryPayload = ({
   };
 };
 
-export const displayStoryDetails = (story: PivotalStoryResponse) => {
+export const getStoryDetailsAsTable = (story: PivotalStoryResponse): string => {
   const table = new Table({
     colWidths: [15, 55],
     head: ['', 'Story Details'],
@@ -88,7 +89,7 @@ export const displayStoryDetails = (story: PivotalStoryResponse) => {
 
   table.push(...rows);
 
-  console.log(table.toString());
+  return table.toString();
 };
 
 export const createNewStory = async (client: PivotalClient, ownerId: number) => {
@@ -128,21 +129,21 @@ export const getExistingStories = async (client: PivotalClient, owned: boolean, 
 
 export const getWorkflow = async ({ newStory }: { newStory: boolean }) => {
   if (newStory === true) {
-    return StartStoryOption.New;
+    return StartStoryWorkflow.New;
   }
-  const { selection } = await inquirer.prompt(StartStoryQuestions);
+  const { selection } = await inquirer.prompt(PickStoryWorkflowQuestions);
   return selection;
 };
 
-export const getStoryToWorkOn = async (client: PivotalClient, owner: PivotalProfile, workflow: StartStoryOption) => {
+export const getStoryToWorkOn = async (client: PivotalClient, owner: PivotalProfile, workflow: StartStoryWorkflow) => {
   const { id: ownerId } = owner;
 
-  if (workflow === StartStoryOption.New) {
+  if (workflow === StartStoryWorkflow.New) {
     const story = await createNewStory(client, ownerId);
     return story;
   }
 
-  const owned = workflow === StartStoryOption.Owned;
+  const owned = workflow === StartStoryWorkflow.Owned;
   const stories = await getExistingStories(client, owned, ownerId);
   const { story } = await inquirer.prompt(getSelectStoryFromListQuestions(stories));
   return story;
@@ -172,4 +173,10 @@ export const getSearchableStoryListSource = (
   };
 
   return source;
+};
+
+export const startWorkingOnStory = async (story: PivotalStoryResponse) => {
+  const answers = await inquirer.prompt(getStartStoryQuestions(story));
+  console.log(answers);
+  return answers;
 };
