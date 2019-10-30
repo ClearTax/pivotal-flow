@@ -1,4 +1,4 @@
-import { debugLogObject, debugLog } from './console';
+import { debugLogObject } from './console';
 import { inDetachedHeadState } from './git';
 import { getStoryId } from './pivotal/common';
 
@@ -21,9 +21,9 @@ export const parseHookParams = (envName: string) => {
  */
 export const shouldSkipBranchCheck = (
   /* checkout out from */
-  prevHead: string,
+  _prevHead: string,
   /* checkout out to */
-  currentHead: string,
+  _currentHead: string,
   /* checkoutType is 0 when it's a file checkout */
   checkoutType: string
 ) => {
@@ -32,12 +32,7 @@ export const shouldSkipBranchCheck = (
     return true;
   }
 
-  debugLogObject('head references', { prevHead, currentHead });
-
-  if (prevHead === currentHead) {
-    debugLog('skipped due same prevHead & currentHead');
-    return true;
-  }
+  debugLogObject('head references', { _prevHead, _currentHead });
 
   // if we're in a detached head state (eg. submodule checkout or rebase)
   const detachedState = inDetachedHeadState();
