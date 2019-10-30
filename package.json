@@ -13,6 +13,7 @@
     "lint": "eslint .",
     "lint:fix": "npm run lint -- --fix",
     "build": "rm -rf dist && tsc",
+    "postbuild": "./scripts/make-executable.sh",
     "start": "tsc --watch",
     "prepublishOnly": "npm run test && npm run build"
   },

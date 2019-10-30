@@ -39,9 +39,11 @@ export const inDetachedHeadState = () => {
 
 /**
  * Get count of how many times a particular ref is checked out.
- * @param {String} ref a git ref name
  */
-export const getCheckoutCount = (ref = '') => {
+export const getCheckoutCount = (
+  /** The git `ref` to check */
+  ref = ''
+) => {
   const count = execSync(`git reflog --date=local | grep -o '${ref}' | wc -l`, { encoding: 'utf-8' }).trim();
   debugLogObject('checkout count', { count, ref });
   return parseInt(count, 10);

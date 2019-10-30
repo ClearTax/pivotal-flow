@@ -2,7 +2,7 @@ import chalk from 'chalk';
 
 import { getStoryId } from '../../utils/pivotal/common';
 import { shouldSkipBranchCheck } from '../../utils/hooks';
-import { debugLog, warning } from '../../utils/console';
+import { debugLog, warning, debugLogObject } from '../../utils/console';
 import { getCurrentBranch, isNewBranch } from '../../utils/git';
 
 export default function postCheckoutHook(prevHead: string, currentHead: string, checkoutType: string) {
@@ -16,7 +16,7 @@ export default function postCheckoutHook(prevHead: string, currentHead: string, 
   const { found: hasStoryId } = getStoryId(branch);
   const showWarning = branchIsNew && !hasStoryId;
 
-  debugLog('post-checkout flags', { branch, branchIsNew, hasStoryId, showWarning });
+  debugLogObject('post-checkout flags', { branch, branchIsNew, hasStoryId, showWarning });
 
   if (showWarning) {
     warning(`
@@ -38,6 +38,5 @@ Valid sample branch names:
 ‣ 'chore/changelogUpdate_12345678'
 ‣ 'bugfix/fix-some-strange-bug_12345678'
 `)}`);
-    throw 'post-checkout: pivotal-id missing';
   }
 }

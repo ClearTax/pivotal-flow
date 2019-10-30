@@ -1,4 +1,4 @@
-import { debugLogObject } from './console';
+import { debugLogObject, debugLog } from './console';
 import { inDetachedHeadState } from './git';
 import { getStoryId } from './pivotal/common';
 
@@ -27,16 +27,16 @@ export const shouldSkipBranchCheck = (
   /* checkoutType is 0 when it's a file checkout */
   checkoutType: string
 ) => {
+  debugLogObject('shouldSkipBranchCheck', { _prevHead, _currentHead, checkoutType });
+
   if (checkoutType !== '1') {
-    debugLogObject('skipped due to checkoutType', { checkoutType });
+    debugLog('skipped due to checkoutType');
     return true;
   }
 
-  debugLogObject('head references', { _prevHead, _currentHead });
-
   // if we're in a detached head state (eg. submodule checkout or rebase)
   const detachedState = inDetachedHeadState();
-  debugLogObject('inDetachedHeadState?', { detachedState });
+  debugLogObject('inDetachedHeadState', { detachedState });
 
   return detachedState;
 };
