@@ -43,7 +43,7 @@ export const inDetachedHeadState = () => {
 export const getCheckoutCount = (
   /** The git `ref` to check */
   ref = ''
-) => {
+): number => {
   const count = execSync(`git reflog --date=local | grep -o '${ref}' | wc -l`, { encoding: 'utf-8' }).trim();
   debugLogObject('checkout count', { count, ref });
   return parseInt(count, 10);
