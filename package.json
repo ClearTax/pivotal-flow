@@ -39,7 +39,9 @@
     "git",
     "hook",
     "hooks",
-    "post-checkout"
+    "post-checkout",
+    "commit-msg",
+    "prepare-commit-msg"
   ],
   "bugs": {
     "url": "https://github.com/ClearTax/pivotal-flow/issues"
