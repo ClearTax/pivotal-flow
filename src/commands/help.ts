@@ -11,13 +11,13 @@ Available commands in pivotal-flow:
 Hooks:
 
   Check for Pivotal Story ID in the current branch name:
-  $ pivotal-flow hook post-checkout
+  $ pivotal-flow hook check-branch-story
+  
+  Check for Pivotal Story ID presence in every commit message via the
+  commit-msg hook via husky:
+  $ pivotal-flow hook check-commit-story
 
   Add Pivotal Story ID from current branch name to every commit as
   a prepare-commit-msg hook via husky:
-  $ pivotal-flow hook prepare-commit-msg
-
-  Check for Pivotal Story ID presence in every commit message via the
-  commit-msg hook via husky:
-  $ pivotal-flow hook prepare-commit-msg
+  $ pivotal-flow hook add-story-commit
 `;

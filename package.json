@@ -50,9 +50,9 @@
   "husky": {
     "hooks": {
       "pre-commit": "lint-staged",
-      "commit-msg": "node -r ts-node/register src/cli.ts hook commit-msg",
-      "post-checkout": "node -r ts-node/register src/cli.ts hook post-checkout",
-      "prepare-commit-msg": "node -r ts-node/register src/cli.ts hook prepare-commit-msg"
+      "commit-msg": "node -r ts-node/register src/cli.ts hook check-commit-story",
+      "post-checkout": "node -r ts-node/register src/cli.ts hook check-branch-story",
+      "prepare-commit-msg": "node -r ts-node/register src/cli.ts hook add-story-commit"
     }
   },
   "lint-staged": {
