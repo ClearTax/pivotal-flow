@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
-import serialize from 'serialize-javascript';
 
 import { error, warning } from '../../utils/console';
 import { abortIfNotSetup } from '../init/utils';
@@ -15,6 +14,7 @@ import { getWorkflow, getStoryToWorkOn, startWorkingOnStory } from './utils';
 
   // parse at the end & then use options
   program.parse(process.argv);
+  if (program.debug) console.log(program.opts());
 
   await abortIfNotSetup();
   const { newStory = false, debug = false } = program;
@@ -24,14 +24,14 @@ import { getWorkflow, getStoryToWorkOn, startWorkingOnStory } from './utils';
     const client = new PivotalClient({ debug });
     const profile = await client.getProfile();
     const story = await getStoryToWorkOn(client, profile, workflow);
-    await startWorkingOnStory(client, story);
+    await startWorkingOnStory(story);
   } catch (e) {
     if (e instanceof Error) {
       error(e.valueOf().toString());
     } else {
       warning('An unknown error occurred. Use the --debug option to get more details.`');
     }
-    debug && error(serialize(e, { space: 2 }));
+    debug && error(e);
     process.exit(1);
   }
   process.exit(0);

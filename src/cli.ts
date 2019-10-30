@@ -11,7 +11,7 @@ import getVersion from './commands/version';
   program.name('pivotal-flow').description(`Automate your pivotal workflow.`);
 
   // add global options
-  program.option('--debug', 'Debug pivotal-flow').version(await getVersion());
+  program.version(await getVersion());
   program.on('--help', () => console.log(getHelpOutput()));
 
   // add commands
@@ -24,6 +24,4 @@ import getVersion from './commands/version';
 
   // parse at the end
   program.parse(process.argv);
-
-  if (program.debug) console.log(program.opts());
 })();

@@ -2,7 +2,7 @@ import { QuestionCollection } from 'inquirer';
 
 import { slugifyName } from '../../utils/string';
 import { getStoryTypeChoices, getStoryBranchName } from '../../utils/pivotal/common';
-import { StartStoryWorkflow, StartStoryAction } from './types';
+import { StartStoryWorkflow } from './types';
 import { StoryType, PointScales, PivotalStoryResponse } from '../../utils/pivotal/types';
 import { HelpWorkOnNewStory, HelpSelectStoryFromList, HelpStartStory } from './helpText';
 import { getSearchableStoryListSource, getStoryDetailsAsTable } from './utils';
@@ -105,7 +105,7 @@ export const getSelectStoryFromListQuestions = (
 ];
 
 export interface StartStoryAnswers {
-  actions: StartStoryAction[];
+  checkoutBranch: boolean;
   branchName: string;
 }
 
@@ -116,32 +116,18 @@ export const getStartStoryQuestions = (story: PivotalStoryResponse): QuestionCol
   const storyTable = getStoryDetailsAsTable(story);
   return [
     {
-      type: 'checkbox',
-      name: 'actions',
-      message: `\n\nSelect the actions you'd like to take:`,
+      type: 'confirm',
+      name: 'checkoutBranch',
+      message: `\n\nWould you like to checkout a new branch for this story?:`,
       prefix: HelpStartStory.actions(storyTable),
-      choices: [
-        {
-          name: 'Checkout a new branch for this story',
-          short: 'checkout-new-branch',
-          value: StartStoryAction.CheckoutNewBranch,
-          checked: true,
-        },
-        {
-          name: `Move story to 'started state' (if in 'unplanned/unstarted' state)`,
-          short: 'move-to-started',
-          value: StartStoryAction.MoveToStartedState,
-          checked: false,
-        },
-      ],
+      default: true,
     },
     {
       type: 'input',
       name: 'branchName',
       message: 'Branch Name:',
       prefix: HelpStartStory.branchName(suggestedBranchName),
-      when: answers => answers.actions.includes(StartStoryAction.CheckoutNewBranch),
-      transformer: (input: string) => getStoryBranchName(input || slugifiedStoryName, type, id),
+      when: answers => answers.checkoutBranch === true,
       default: slugifiedStoryName,
       validate: (input: string) => {
         if (!input || input.length < 8 || input.length > 25) {

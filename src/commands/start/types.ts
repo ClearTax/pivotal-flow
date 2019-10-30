@@ -3,8 +3,3 @@ export const enum StartStoryWorkflow {
   Owned,
   Unassigned,
 }
-
-export const enum StartStoryAction {
-  CheckoutNewBranch = 'checkoutNewBranch',
-  MoveToStartedState = 'moveToStartedState',
-}
