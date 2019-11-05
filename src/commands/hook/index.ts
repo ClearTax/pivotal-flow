@@ -18,9 +18,9 @@ interface Handler {
 
 const HANDLERS = {
   'record-params': recordParams as Handler,
-  'check-commit-story': commitMsg as Handler,
-  'check-branch-story': postCheckout as Handler,
-  'add-story-commit': prepareCommitMsg as Handler,
+  'check-story-id-in-commit': commitMsg as Handler,
+  'check-story-id-in-branch': postCheckout as Handler,
+  'add-story-id-to-commit': prepareCommitMsg as Handler,
 };
 
 const AVAILABLE_HOOKS: string[] = Object.keys(HANDLERS);
