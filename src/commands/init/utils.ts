@@ -27,7 +27,7 @@ To get started with pivotal-flow, run the following commands in your current ter
 `);
 
 export interface PivotalFlowConfig {
-  projectName?: string;
+  projectName: string;
   projectId: number;
   default?: boolean;
 }
