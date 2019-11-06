@@ -3,7 +3,13 @@ import serialize, { SerializeJSOptions } from 'serialize-javascript';
 import ora = require('ora');
 
 import { isSetupComplete } from '../../commands/init/utils';
-import { PivotalProfile, PivotalStory, PivotalStoryResponse, GetStoriesResponse } from './types';
+import {
+  PivotalProfile,
+  PivotalStory,
+  PivotalStoryResponse,
+  GetStoriesResponse,
+  GetProjectDetailsResponse,
+} from './types';
 import { error as logError, warning as logWarning } from '../console';
 
 export interface PivotalClientOptions {
@@ -135,14 +141,29 @@ export default class PivotalClient {
   /**
    * Fetch stories based on project and pivotal query
    * @param {string} query - pivotal search query-string
+   * @param project
    */
-  async getStories(query: string) {
+  async getStories(query: string, project: string) {
     return this.request<GetStoriesResponse>(
       {
         method: 'GET',
-        url: `/projects/${this.PROJECT_ID}/search?query=${query}`,
+        url: `/projects/${project}/search?query=${query}`,
       },
       { progress: 'Fetching stories' }
+    );
+  }
+
+  /**
+   * Fetch a project details for a specified projectId
+   * @param {string} projectId - pivotal projectId
+   */
+  async getProjectDetails(projectId: string) {
+    return this.request<GetProjectDetailsResponse>(
+      {
+        method: 'GET',
+        url: `/projects/${projectId}`,
+      },
+      { progress: 'Fetching project details' }
     );
   }
 
@@ -164,11 +185,11 @@ export default class PivotalClient {
    * Create a story in the current project.
    * @param {PivotalStory} story
    */
-  async createStory(story: PivotalStory) {
+  async createStory(story: PivotalStory, project: string) {
     return this.request<PivotalStoryResponse>(
       {
         method: 'GET',
-        url: `/projects/${this.PROJECT_ID}/stories`,
+        url: `/projects/${project}/stories`,
         data: story,
       },
       { progress: 'Creating story', success: 'Story created successfully', error: 'Failed to create a story' }

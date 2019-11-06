@@ -1,5 +1,8 @@
 import Table from 'cli-table';
 import { filter } from 'fuzzy';
+import { readFileSync } from 'fs';
+import { resolve } from 'path';
+import { homedir } from 'os';
 
 import { checkoutNewBranch } from '../../utils/git';
 import { getStoryTypeLabel, getStoryTypeIcon, getStoryBranchName } from '../../utils/pivotal/common';
@@ -13,6 +16,7 @@ import {
 import { StartStoryWorkflow } from './types';
 import {
   PickStoryWorkflowQuestions,
+  PickProjectWorkflowQuestions,
   WorkOnNewStoryAnswers,
   WorkOnNewStoryQuestions,
   getSelectStoryFromListQuestions,
@@ -21,6 +25,7 @@ import {
 import inquirer from '../../utils/inquirer';
 import PivotalClient from '../../utils/pivotal/client';
 import { truncate, slugifyName } from '../../utils/string';
+import { checkIfConfigFileExists, configFileName } from '../../utils/fs';
 
 /**
  * Parse the labels string into a list of labels
@@ -101,10 +106,14 @@ export const getStoryDetailsAsTable = (story: PivotalStoryResponse): string => {
   return table.toString();
 };
 
-export const createNewStory = async (client: PivotalClient, ownerId: number): Promise<PivotalStoryResponse> => {
+export const createNewStory = async (
+  client: PivotalClient,
+  ownerId: number,
+  project: string
+): Promise<PivotalStoryResponse> => {
   const answers = await inquirer.prompt(WorkOnNewStoryQuestions);
   const storyPayload = getNewStoryPayload({ ownerId, answers });
-  return client.createStory(storyPayload);
+  return client.createStory(storyPayload, project);
 };
 
 /**
@@ -124,12 +133,13 @@ export const getSearchStoryQuery = (assignedSelf: boolean, ownerId: number): str
 export const getExistingStories = async (
   client: PivotalClient,
   owned: boolean,
-  ownerId: number
+  ownerId: number,
+  project: string
 ): Promise<PivotalStoryResponse[]> => {
   const query = getSearchStoryQuery(owned, ownerId);
   const {
     stories: { stories },
-  } = await client.getStories(query);
+  } = await client.getStories(query, project);
 
   if (!(stories && stories.length)) {
     throw new Error(
@@ -147,20 +157,33 @@ export const getWorkflow = async ({ newStory }: { newStory: boolean }): Promise<
   return selection;
 };
 
+export const selectProjectToCreateStory = async (): Promise<string> => {
+  if (checkIfConfigFileExists()) {
+    const config = readFileSync(resolve(homedir(), configFileName.PIVOTAL_CONFIG_FILE), { encoding: 'utf8' });
+    const parsedConfig = JSON.parse(config);
+    if (parsedConfig && Object.keys(parsedConfig).length > 0) {
+      const { selectedProject } = await inquirer.prompt(PickProjectWorkflowQuestions(parsedConfig));
+      return String(selectedProject);
+    }
+  }
+  return process.env.PIVOTAL_PROJECT_ID as string;
+};
+
 export const getStoryToWorkOn = async (
   client: PivotalClient,
   owner: PivotalProfile,
-  workflow: StartStoryWorkflow
+  workflow: StartStoryWorkflow,
+  project: string
 ): Promise<PivotalStoryResponse> => {
   const { id: ownerId } = owner;
 
   if (workflow === StartStoryWorkflow.New) {
-    const story = await createNewStory(client, ownerId);
+    const story = await createNewStory(client, ownerId, project);
     return story;
   }
 
   const owned = workflow === StartStoryWorkflow.Owned;
-  const stories = await getExistingStories(client, owned, ownerId);
+  const stories = await getExistingStories(client, owned, ownerId, project);
   const { story } = await inquirer.prompt(getSelectStoryFromListQuestions(stories));
   return story;
 };

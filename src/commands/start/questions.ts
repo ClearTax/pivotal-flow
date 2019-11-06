@@ -3,12 +3,17 @@ import { QuestionCollection } from 'inquirer';
 import { slugifyName } from '../../utils/string';
 import { getStoryTypeChoices, getStoryBranchName } from '../../utils/pivotal/common';
 import { StartStoryWorkflow } from './types';
+import { PivotalFlowConfig } from '../init/utils';
 import { StoryType, PointScales, PivotalStoryResponse } from '../../utils/pivotal/types';
 import { HelpWorkOnNewStory, HelpSelectStoryFromList, HelpStartStory } from './helpText';
 import { getSearchableStoryListSource, getStoryDetailsAsTable } from './utils';
 
 export interface PickStoryWorkflowAnswers {
   selection: StartStoryWorkflow;
+}
+
+export interface PickProjectWorkflowAnswers {
+  selectedProject: number;
 }
 
 export const PickStoryWorkflowQuestions: QuestionCollection<PickStoryWorkflowAnswers> = [
@@ -24,6 +29,25 @@ export const PickStoryWorkflowQuestions: QuestionCollection<PickStoryWorkflowAns
     ],
   },
 ];
+
+export const PickProjectWorkflowQuestions = (
+  projects: PivotalFlowConfig[]
+): QuestionCollection<PickProjectWorkflowAnswers> => {
+  const defaultProject = projects.find((project: PivotalFlowConfig) => project.default === true);
+  const projectChoices = projects.map((project: PivotalFlowConfig) => {
+    const { projectId: value, projectName: name } = project;
+    return { name, value };
+  });
+  return [
+    {
+      type: 'list',
+      name: 'selectedProject',
+      message: 'Choose a project?',
+      default: defaultProject,
+      choices: [...projectChoices],
+    },
+  ];
+};
 
 export interface WorkOnNewStoryAnswers {
   story_type: StoryType;

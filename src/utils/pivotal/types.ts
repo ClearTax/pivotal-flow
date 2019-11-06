@@ -143,6 +143,11 @@ export interface GetStoriesResponse {
   query: string;
 }
 
+export interface GetProjectDetailsResponse {
+  id: number;
+  name: string;
+}
+
 export const PointScales = {
   linear: [0, 1, 2, 3],
   fibonacci: [0, 1, 2, 3, 5, 8],
