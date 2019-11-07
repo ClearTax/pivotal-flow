@@ -1,5 +1,5 @@
 import { promisify } from 'util';
-import fs, { existsSync } from 'fs';
+import fs from 'fs';
 import { homedir } from 'os';
 
 export const readFile = promisify(fs.readFile);
@@ -12,5 +12,5 @@ export enum configFileName {
  * Checks if pivotal-flow-config file exists at user's home directory
  */
 export const checkIfConfigFileExists = (): boolean => {
-  return existsSync(`${homedir()}/${configFileName.PIVOTAL_CONFIG_FILE}`);
+  return fs.existsSync(`${homedir()}/${configFileName.PIVOTAL_CONFIG_FILE}`);
 };

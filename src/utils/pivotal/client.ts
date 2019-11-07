@@ -141,13 +141,13 @@ export default class PivotalClient {
   /**
    * Fetch stories based on project and pivotal query
    * @param {string} query - pivotal search query-string
-   * @param project
+   * @param projectId
    */
-  async getStories(query: string, project: string) {
+  async getStories(query: string, projectId: string) {
     return this.request<GetStoriesResponse>(
       {
         method: 'GET',
-        url: `/projects/${project}/search?query=${query}`,
+        url: `/projects/${projectId}/search?query=${query}`,
       },
       { progress: 'Fetching stories' }
     );
@@ -184,12 +184,13 @@ export default class PivotalClient {
   /**
    * Create a story in the current project.
    * @param {PivotalStory} story
+   * @param projectId string
    */
-  async createStory(story: PivotalStory, project: string) {
+  async createStory(story: PivotalStory, projectId: string) {
     return this.request<PivotalStoryResponse>(
       {
         method: 'POST',
-        url: `/projects/${project}/stories`,
+        url: `/projects/${projectId}/stories`,
         data: story,
       },
       { progress: 'Creating story', success: 'Story created successfully', error: 'Failed to create a story' }

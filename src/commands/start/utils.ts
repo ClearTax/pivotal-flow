@@ -173,17 +173,17 @@ export const getStoryToWorkOn = async (
   client: PivotalClient,
   owner: PivotalProfile,
   workflow: StartStoryWorkflow,
-  project: string
+  projectId: string
 ): Promise<PivotalStoryResponse> => {
   const { id: ownerId } = owner;
 
   if (workflow === StartStoryWorkflow.New) {
-    const story = await createNewStory(client, ownerId, project);
+    const story = await createNewStory(client, ownerId, projectId);
     return story;
   }
 
   const owned = workflow === StartStoryWorkflow.Owned;
-  const stories = await getExistingStories(client, owned, ownerId, project);
+  const stories = await getExistingStories(client, owned, ownerId, projectId);
   const { story } = await inquirer.prompt(getSelectStoryFromListQuestions(stories));
   return story;
 };
