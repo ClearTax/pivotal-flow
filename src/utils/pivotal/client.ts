@@ -188,7 +188,7 @@ export default class PivotalClient {
   async createStory(story: PivotalStory, project: string) {
     return this.request<PivotalStoryResponse>(
       {
-        method: 'GET',
+        method: 'POST',
         url: `/projects/${project}/stories`,
         data: story,
       },
@@ -204,7 +204,7 @@ export default class PivotalClient {
   async updateStory(id: number, story: Partial<PivotalStory>) {
     return this.request<PivotalStoryResponse>(
       {
-        method: 'GET',
+        method: 'PUT',
         url: `/projects/${this.PROJECT_ID}/stories/${id}`,
         data: story,
       },
