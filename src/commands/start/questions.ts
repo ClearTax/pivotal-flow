@@ -35,7 +35,7 @@ export const PickProjectWorkflowQuestions = (
 ): QuestionCollection<PickProjectWorkflowAnswers> => {
   const defaultProject = projects.find((project: PivotalFlowConfig) => project.default === true);
   const projectChoices = projects.map((project: PivotalFlowConfig) => {
-    const { projectId: value, projectName: name } = project;
+    const { projectName: name, projectId: value } = project;
     return { name, value };
   });
   return [
