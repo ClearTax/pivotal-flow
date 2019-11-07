@@ -134,12 +134,12 @@ export const getExistingStories = async (
   client: PivotalClient,
   owned: boolean,
   ownerId: number,
-  project: string
+  projectId: string
 ): Promise<PivotalStoryResponse[]> => {
   const query = getSearchStoryQuery(owned, ownerId);
   const {
     stories: { stories },
-  } = await client.getStories(query, project);
+  } = await client.getStories(query, projectId);
 
   if (!(stories && stories.length)) {
     throw new Error(
