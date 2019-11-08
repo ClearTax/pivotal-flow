@@ -29,7 +29,7 @@ To get started with pivotal-flow, run the following commands in your current ter
 export interface PivotalFlowConfig {
   projectName: string;
   projectId: number;
-  default?: boolean;
+  isDefault?: boolean;
 }
 
 /**
@@ -39,7 +39,7 @@ export interface PivotalFlowConfig {
 
 export const createPivotalFlowConfig = (projectDetails: GetProjectDetailsResponse): PivotalFlowConfig => {
   const { name, id } = projectDetails;
-  return { projectName: name, projectId: id, default: true };
+  return { projectName: name, projectId: id, isDefault: true };
 };
 
 /**
