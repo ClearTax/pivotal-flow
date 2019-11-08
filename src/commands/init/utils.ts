@@ -8,7 +8,7 @@ import { PromptToSetup, SetupAnswers, SetupQuestions } from './questions';
 import { error, log } from '../../utils/console';
 import PivotalClient from '../../utils/pivotal/client';
 import { checkIfConfigFileExists, configFileName } from '../../utils/fs';
-import { GetProjectDetailsResponse } from '../../utils/pivotal/types';
+import { PivotalProjectResponse } from '../../utils/pivotal/types';
 
 export const isSetupComplete = () => !!(process.env.PIVOTAL_TOKEN && process.env.PIVOTAL_PROJECT_ID);
 
@@ -34,10 +34,10 @@ export interface PivotalFlowConfig {
 
 /**
  * create and returns a config object for a given projectDetails
- * @param {GetProjectDetailsResponse} projectDetails
+ * @param {PivotalProjectResponse} projectDetails
  */
 
-export const createPivotalFlowConfig = (projectDetails: GetProjectDetailsResponse): PivotalFlowConfig => {
+export const createPivotalFlowConfig = (projectDetails: PivotalProjectResponse): PivotalFlowConfig => {
   const { name, id } = projectDetails;
   return { projectName: name, projectId: id, isDefault: true };
 };
@@ -48,7 +48,7 @@ export const createPivotalFlowConfig = (projectDetails: GetProjectDetailsRespons
  */
 export const createPivotalFlowConfigFile = async (pivotalProjectId: string): Promise<void> => {
   const client = new PivotalClient({ debug: true });
-  const projectDetails = await client.getProjectDetails(pivotalProjectId);
+  const projectDetails = await client.getProject(pivotalProjectId);
   const pivotalFlowConfig = createPivotalFlowConfig(projectDetails);
   const jsonifyConfig = JSON.stringify([pivotalFlowConfig]);
 

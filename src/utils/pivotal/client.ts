@@ -8,7 +8,7 @@ import {
   PivotalStory,
   PivotalStoryResponse,
   GetStoriesResponse,
-  GetProjectDetailsResponse,
+  PivotalProjectResponse,
 } from './types';
 import { error as logError, warning as logWarning } from '../console';
 
@@ -157,8 +157,8 @@ export default class PivotalClient {
    * Fetch a project details for a specified projectId
    * @param {string} projectId - pivotal projectId
    */
-  async getProjectDetails(projectId: string) {
-    return this.request<GetProjectDetailsResponse>(
+  async getProject(projectId: string) {
+    return this.request<PivotalProjectResponse>(
       {
         method: 'GET',
         url: `/projects/${projectId}`,
