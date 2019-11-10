@@ -84,13 +84,14 @@ export const createPivotalFlowConfigFile = async (pivotalProjectId: string, pivo
  * Collects user input & displays setup instructions accordingly & creates a config file with given projectId.
  */
 export const performSetup = async () => {
-  const pivotalFlowConfig = await getPivotalFlowConfig();
   if (!isSetupComplete()) {
     const answers = await inquirer.prompt(SetupQuestions);
     const { pivotalProjectId, pivotalToken } = answers;
 
     if (pivotalProjectId && pivotalToken) {
       displaySetupInstructions(answers);
+      const pivotalFlowConfig = await getPivotalFlowConfig();
+
       if (!pivotalFlowConfig) {
         await createPivotalFlowConfigFile(pivotalProjectId, pivotalToken);
       }
