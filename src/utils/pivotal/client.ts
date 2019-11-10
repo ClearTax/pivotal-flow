@@ -167,7 +167,7 @@ export default class PivotalClient {
       {
         method: 'GET',
         url: `/projects/${projectId}`,
-        headers: { 'X-TrackerToken': pivotalToken || this.API_TOKEN },
+        headers: { 'X-TrackerToken': pivotalToken },
       },
       { progress: 'Fetching project details' }
     );
