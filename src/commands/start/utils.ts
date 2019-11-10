@@ -1,8 +1,5 @@
 import Table from 'cli-table';
 import { filter } from 'fuzzy';
-import { readFileSync } from 'fs';
-import { resolve } from 'path';
-import { homedir } from 'os';
 
 import { checkoutNewBranch } from '../../utils/git';
 import { getStoryTypeLabel, getStoryTypeIcon, getStoryBranchName } from '../../utils/pivotal/common';
@@ -25,7 +22,7 @@ import {
 import inquirer from '../../utils/inquirer';
 import PivotalClient from '../../utils/pivotal/client';
 import { truncate, slugifyName } from '../../utils/string';
-import { checkIfConfigFileExists, configFileName } from '../../utils/fs';
+import { getPivotalFlowConfig } from '../init/utils';
 
 /**
  * Parse the labels string into a list of labels
@@ -158,11 +155,11 @@ export const getWorkflow = async ({ newStory }: { newStory: boolean }): Promise<
 };
 
 export const selectProjectToCreateStory = async (): Promise<string> => {
-  if (checkIfConfigFileExists()) {
-    const config = readFileSync(resolve(homedir(), configFileName.PIVOTAL_CONFIG_FILE), { encoding: 'utf8' });
-    const parsedConfig = JSON.parse(config);
-    if (parsedConfig && Object.keys(parsedConfig).length > 0) {
-      const { selectedProject } = await inquirer.prompt(PickProjectWorkflowQuestions(parsedConfig));
+  const pivotalFlowConfig = await getPivotalFlowConfig();
+  if (pivotalFlowConfig) {
+    const { config } = pivotalFlowConfig;
+    if (config && Object.keys(config).length > 0) {
+      const { selectedProject } = await inquirer.prompt(PickProjectWorkflowQuestions(config));
       return String(selectedProject);
     }
   }
@@ -193,7 +190,7 @@ export const getStoryToWorkOn = async (
  * @see https://github.com/mokkabonna/inquirer-autocomplete-prompt#example
  */
 export const getSearchableStoryListSource = (
-  /** Current story list to search from */
+  /* Current story list to search from */
   stories: PivotalStoryResponse[]
 ) => {
   const choices = stories.map(story => {

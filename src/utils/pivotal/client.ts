@@ -29,10 +29,6 @@ export default class PivotalClient {
   private debug: boolean;
 
   constructor(options: PivotalClientOptions) {
-    if (!isSetupComplete()) {
-      throw new Error('Setup incomplete.');
-    }
-
     this.API_TOKEN = process.env.PIVOTAL_TOKEN as string;
     this.PROJECT_ID = process.env.PIVOTAL_PROJECT_ID as string;
     this.debug = options.debug || false;
@@ -42,6 +38,12 @@ export default class PivotalClient {
       timeout: 10000, // search could be really slow, keeping a 10 second timeout.
       headers: { 'X-TrackerToken': this.API_TOKEN },
     });
+  }
+
+  private static checkConfigSetup() {
+    if (!isSetupComplete()) {
+      throw new Error('Setup incomplete.');
+    }
   }
 
   getSpinner(label: string) {
@@ -125,6 +127,7 @@ export default class PivotalClient {
    * Get the details about the current user
    */
   async getProfile() {
+    PivotalClient.checkConfigSetup();
     return this.request<PivotalProfile>(
       {
         method: 'GET',
@@ -144,6 +147,7 @@ export default class PivotalClient {
    * @param projectId
    */
   async getStories(query: string, projectId: string) {
+    PivotalClient.checkConfigSetup();
     return this.request<GetStoriesResponse>(
       {
         method: 'GET',
@@ -156,12 +160,14 @@ export default class PivotalClient {
   /**
    * Fetch a project details for a specified projectId
    * @param {string} projectId - pivotal projectId
+   * @param {string} pivotalToken
    */
-  async getProject(projectId: string) {
+  async getProject(projectId: string, pivotalToken: string) {
     return this.request<PivotalProjectResponse>(
       {
         method: 'GET',
         url: `/projects/${projectId}`,
+        headers: { 'X-TrackerToken': pivotalToken || this.API_TOKEN },
       },
       { progress: 'Fetching project details' }
     );
@@ -172,6 +178,7 @@ export default class PivotalClient {
    * @param id {number} Story id
    */
   async getStory(id: number) {
+    PivotalClient.checkConfigSetup();
     return this.request<PivotalStoryResponse>(
       {
         method: 'GET',
@@ -187,6 +194,7 @@ export default class PivotalClient {
    * @param projectId string
    */
   async createStory(story: PivotalStory, projectId: string) {
+    PivotalClient.checkConfigSetup();
     return this.request<PivotalStoryResponse>(
       {
         method: 'POST',
@@ -203,6 +211,7 @@ export default class PivotalClient {
    * @param story {PivotalStory} story details to be updated
    */
   async updateStory(id: number, story: Partial<PivotalStory>) {
+    PivotalClient.checkConfigSetup();
     return this.request<PivotalStoryResponse>(
       {
         method: 'PUT',

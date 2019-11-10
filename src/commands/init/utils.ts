@@ -2,12 +2,14 @@ import chalk from 'chalk';
 import { writeFileSync } from 'fs';
 import { homedir } from 'os';
 import { resolve } from 'path';
+import { cosmiconfig } from 'cosmiconfig';
+import { CosmiconfigResult } from 'cosmiconfig/dist/types';
 
 import inquirer from '../../utils/inquirer';
 import { PromptToSetup, SetupAnswers, SetupQuestions } from './questions';
 import { error, log } from '../../utils/console';
 import PivotalClient from '../../utils/pivotal/client';
-import { checkIfConfigFileExists, configFileName } from '../../utils/fs';
+import { configFileName } from '../../utils/fs';
 import { PivotalProjectResponse } from '../../utils/pivotal/types';
 
 export const isSetupComplete = () => !!(process.env.PIVOTAL_TOKEN && process.env.PIVOTAL_PROJECT_ID);
@@ -33,10 +35,24 @@ export interface PivotalFlowConfig {
 }
 
 /**
+ * Searches for pivotal flow config and returns a config array if found or returns undefined
+ */
+export const getPivotalFlowConfig = async (): Promise<CosmiconfigResult | void> => {
+  const explorer = cosmiconfig(`${homedir()}`, { searchPlaces: [`${configFileName.PIVOTAL_CONFIG_FILE}`] });
+  try {
+    const pivotalFlowConfig = await explorer.search();
+    if (pivotalFlowConfig) {
+      return pivotalFlowConfig;
+    }
+  } catch (e) {
+    error(`Some error occurred while creating config file!. ${e}`);
+  }
+};
+
+/**
  * create and returns a config object for a given projectDetails
  * @param {PivotalProjectResponse} projectDetails
  */
-
 export const createPivotalFlowConfig = (projectDetails: PivotalProjectResponse): PivotalFlowConfig => {
   const { name, id } = projectDetails;
   return { projectName: name, projectId: id, isDefault: true };
@@ -45,10 +61,11 @@ export const createPivotalFlowConfig = (projectDetails: PivotalProjectResponse):
 /**
  * creates a config file at user's home directory to store pivotal project ids
  * @param pivotalProjectId
+ * @param pivotalToken
  */
-export const createPivotalFlowConfigFile = async (pivotalProjectId: string): Promise<void> => {
+export const createPivotalFlowConfigFile = async (pivotalProjectId: string, pivotalToken: string): Promise<void> => {
   const client = new PivotalClient({ debug: true });
-  const projectDetails = await client.getProject(pivotalProjectId);
+  const projectDetails = await client.getProject(pivotalProjectId, pivotalToken);
   const pivotalFlowConfig = createPivotalFlowConfig(projectDetails);
   const jsonifyConfig = JSON.stringify([pivotalFlowConfig]);
 
@@ -60,23 +77,31 @@ export const createPivotalFlowConfigFile = async (pivotalProjectId: string): Pro
 {dim Feel free to add more project ids to the file} : {bold ~/${configFileName.PIVOTAL_CONFIG_FILE}}
       `);
 
-  process.exit();
+  process.exit(0);
 };
 
 /**
  * Collects user input & displays setup instructions accordingly & creates a config file with given projectId.
  */
 export const performSetup = async () => {
-  const answers = await inquirer.prompt(SetupQuestions);
-  const { pivotalProjectId, pivotalToken } = answers;
+  const pivotalFlowConfig = await getPivotalFlowConfig();
+  if (!isSetupComplete()) {
+    const answers = await inquirer.prompt(SetupQuestions);
+    const { pivotalProjectId, pivotalToken } = answers;
 
-  if (pivotalProjectId && pivotalToken) {
-    displaySetupInstructions(answers);
-    if (!checkIfConfigFileExists()) {
-      await createPivotalFlowConfigFile(pivotalProjectId);
+    if (pivotalProjectId && pivotalToken) {
+      displaySetupInstructions(answers);
+      if (!pivotalFlowConfig) {
+        await createPivotalFlowConfigFile(pivotalProjectId, pivotalToken);
+      }
+    } else {
+      error('Failed to set-up pivotal-flow. Please try again.');
     }
   } else {
-    error('Failed to set-up pivotal-flow. Please try again.');
+    log(chalk`
+ {bold Looks like your setup is ready!.}
+ {bold You can start creating stories by running: 'pivotal-flow start'}
+ `);
   }
 };
 
