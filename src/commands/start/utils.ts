@@ -106,11 +106,11 @@ export const getStoryDetailsAsTable = (story: PivotalStoryResponse): string => {
 export const createNewStory = async (
   client: PivotalClient,
   ownerId: number,
-  project: string
+  projectId: string
 ): Promise<PivotalStoryResponse> => {
   const answers = await inquirer.prompt(WorkOnNewStoryQuestions);
   const storyPayload = getNewStoryPayload({ ownerId, answers });
-  return client.createStory(storyPayload, project);
+  return client.createStory(storyPayload, projectId);
 };
 
 /**
