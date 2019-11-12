@@ -103,14 +103,10 @@ export const getStoryDetailsAsTable = (story: PivotalStoryResponse): string => {
   return table.toString();
 };
 
-export const createNewStory = async (
-  client: PivotalClient,
-  ownerId: number,
-  projectId: string
-): Promise<PivotalStoryResponse> => {
+export const createNewStory = async (client: PivotalClient, ownerId: number): Promise<PivotalStoryResponse> => {
   const answers = await inquirer.prompt(WorkOnNewStoryQuestions);
   const storyPayload = getNewStoryPayload({ ownerId, answers });
-  return client.createStory(storyPayload, projectId);
+  return client.createStory(storyPayload);
 };
 
 /**
@@ -130,13 +126,12 @@ export const getSearchStoryQuery = (assignedSelf: boolean, ownerId: number): str
 export const getExistingStories = async (
   client: PivotalClient,
   owned: boolean,
-  ownerId: number,
-  projectId: string
+  ownerId: number
 ): Promise<PivotalStoryResponse[]> => {
   const query = getSearchStoryQuery(owned, ownerId);
   const {
     stories: { stories },
-  } = await client.getStories(query, projectId);
+  } = await client.getStories(query);
 
   if (!(stories && stories.length)) {
     throw new Error(
@@ -154,33 +149,39 @@ export const getWorkflow = async ({ newStory }: { newStory: boolean }): Promise<
   return selection;
 };
 
-export const selectProjectToCreateStory = async (): Promise<string> => {
-  const pivotalFlowConfig = await getPivotalFlowConfig();
-  if (pivotalFlowConfig) {
-    const { config } = pivotalFlowConfig;
-    if (config && Object.keys(config).length > 0) {
-      const { selectedProject } = await inquirer.prompt(PickProjectWorkflowQuestions(config));
-      return String(selectedProject);
+export const selectProjectToCreateStory = async (): Promise<{ apiToken: string; projectId: string }> => {
+  const pivotalConfig = await getPivotalFlowConfig();
+  let projectConfig = { projectId: '', apiToken: '' };
+
+  if (pivotalConfig && Array.isArray(pivotalConfig)) {
+    const [config] = pivotalConfig;
+    const { projects, pivotalApiToken } = config;
+
+    if (projects.length === 1) {
+      const [project] = projects;
+      return { ...projectConfig, projectId: project.projectId, apiToken: pivotalApiToken };
     }
+
+    const { selectedProject } = await inquirer.prompt(PickProjectWorkflowQuestions(projects));
+    projectConfig = { ...projectConfig, projectId: String(selectedProject), apiToken: pivotalApiToken };
   }
-  return process.env.PIVOTAL_PROJECT_ID as string;
+  return projectConfig;
 };
 
 export const getStoryToWorkOn = async (
   client: PivotalClient,
   owner: PivotalProfile,
-  workflow: StartStoryWorkflow,
-  projectId: string
+  workflow: StartStoryWorkflow
 ): Promise<PivotalStoryResponse> => {
   const { id: ownerId } = owner;
 
   if (workflow === StartStoryWorkflow.New) {
-    const story = await createNewStory(client, ownerId, projectId);
+    const story = await createNewStory(client, ownerId);
     return story;
   }
 
   const owned = workflow === StartStoryWorkflow.Owned;
-  const stories = await getExistingStories(client, owned, ownerId, projectId);
+  const stories = await getExistingStories(client, owned, ownerId);
   const { story } = await inquirer.prompt(getSelectStoryFromListQuestions(stories));
   return story;
 };

@@ -3,7 +3,7 @@ import { QuestionCollection } from 'inquirer';
 import { slugifyName } from '../../utils/string';
 import { getStoryTypeChoices, getStoryBranchName } from '../../utils/pivotal/common';
 import { StartStoryWorkflow } from './types';
-import { PivotalFlowConfig } from '../init/utils';
+import { PivotalProjectConfig } from '../init/utils';
 import { StoryType, PointScales, PivotalStoryResponse } from '../../utils/pivotal/types';
 import { HelpWorkOnNewStory, HelpSelectStoryFromList, HelpStartStory } from './helpText';
 import { getSearchableStoryListSource, getStoryDetailsAsTable } from './utils';
@@ -31,10 +31,9 @@ export const PickStoryWorkflowQuestions: QuestionCollection<PickStoryWorkflowAns
 ];
 
 export const PickProjectWorkflowQuestions = (
-  projects: PivotalFlowConfig[]
+  projects: PivotalProjectConfig[]
 ): QuestionCollection<PickProjectWorkflowAnswers> => {
-  const defaultProject = projects.find((project: PivotalFlowConfig) => project.isDefault === true);
-  const projectChoices = projects.map((project: PivotalFlowConfig) => {
+  const projectChoices = projects.map((project: PivotalProjectConfig) => {
     const { projectName: name, projectId: value } = project;
     return { name, value };
   });
@@ -42,8 +41,8 @@ export const PickProjectWorkflowQuestions = (
     {
       type: 'list',
       name: 'selectedProject',
-      message: 'Choose a project?',
-      default: defaultProject,
+      message: 'Choose a project to work on?',
+      default: 0,
       choices: [...projectChoices],
     },
   ];

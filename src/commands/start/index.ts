@@ -19,11 +19,11 @@ import { getWorkflow, getStoryToWorkOn, startWorkingOnStory, selectProjectToCrea
   await abortIfNotSetup();
   const { newStory = false, debug = false } = program;
   try {
+    const { projectId, apiToken } = await selectProjectToCreateStory();
+    const client = new PivotalClient({ apiToken, projectId, debug });
     const workflow = await getWorkflow({ newStory: newStory as boolean });
-    const projectId = await selectProjectToCreateStory();
-    const client = new PivotalClient({ debug });
     const profile = await client.getProfile();
-    const story = await getStoryToWorkOn(client, profile, workflow, projectId);
+    const story = await getStoryToWorkOn(client, profile, workflow);
     await startWorkingOnStory(story);
   } catch (e) {
     if (e instanceof Error) {

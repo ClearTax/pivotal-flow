@@ -2,7 +2,6 @@ import Axios, { AxiosInstance, AxiosError, AxiosRequestConfig } from 'axios';
 import serialize, { SerializeJSOptions } from 'serialize-javascript';
 import ora = require('ora');
 
-import { isSetupComplete } from '../../commands/init/utils';
 import {
   PivotalProfile,
   PivotalStory,
@@ -14,6 +13,8 @@ import { error as logError, warning as logWarning } from '../console';
 
 export interface PivotalClientOptions {
   debug?: boolean;
+  apiToken: string;
+  projectId: string;
 }
 
 /**
@@ -29,8 +30,8 @@ export default class PivotalClient {
   private debug: boolean;
 
   constructor(options: PivotalClientOptions) {
-    this.API_TOKEN = process.env.PIVOTAL_TOKEN as string;
-    this.PROJECT_ID = process.env.PIVOTAL_PROJECT_ID as string;
+    this.API_TOKEN = options.apiToken;
+    this.PROJECT_ID = options.projectId;
     this.debug = options.debug || false;
 
     this.restClient = Axios.create({
@@ -38,12 +39,6 @@ export default class PivotalClient {
       timeout: 10000, // search could be really slow, keeping a 10 second timeout.
       headers: { 'X-TrackerToken': this.API_TOKEN },
     });
-  }
-
-  private static checkConfigSetup() {
-    if (!isSetupComplete()) {
-      throw new Error('Setup incomplete.');
-    }
   }
 
   getSpinner(label: string) {
@@ -127,7 +122,6 @@ export default class PivotalClient {
    * Get the details about the current user
    */
   async getProfile() {
-    PivotalClient.checkConfigSetup();
     return this.request<PivotalProfile>(
       {
         method: 'GET',
@@ -144,14 +138,12 @@ export default class PivotalClient {
   /**
    * Fetch stories based on project and pivotal query
    * @param {string} query - pivotal search query-string
-   * @param projectId
    */
-  async getStories(query: string, projectId: string) {
-    PivotalClient.checkConfigSetup();
+  async getStories(query: string) {
     return this.request<GetStoriesResponse>(
       {
         method: 'GET',
-        url: `/projects/${projectId}/search?query=${query}`,
+        url: `/projects/${this.PROJECT_ID}/search?query=${query}`,
       },
       { progress: 'Fetching stories' }
     );
@@ -159,17 +151,14 @@ export default class PivotalClient {
 
   /**
    * Fetch a project details for a specified projectId
-   * @param {string} projectId - pivotal projectId
-   * @param {string} pivotalToken
    */
-  async getProject(projectId: string, pivotalToken: string) {
+  async getProject() {
     return this.request<PivotalProjectResponse>(
       {
         method: 'GET',
-        url: `/projects/${projectId}`,
-        headers: { 'X-TrackerToken': pivotalToken },
+        url: `/projects/${this.PROJECT_ID}`,
       },
-      { progress: 'Fetching project details' }
+      { progress: `Fetching project details` }
     );
   }
 
@@ -178,7 +167,6 @@ export default class PivotalClient {
    * @param id {number} Story id
    */
   async getStory(id: number) {
-    PivotalClient.checkConfigSetup();
     return this.request<PivotalStoryResponse>(
       {
         method: 'GET',
@@ -191,14 +179,12 @@ export default class PivotalClient {
   /**
    * Create a story in the current project.
    * @param {PivotalStory} story
-   * @param projectId string
    */
-  async createStory(story: PivotalStory, projectId: string) {
-    PivotalClient.checkConfigSetup();
+  async createStory(story: PivotalStory) {
     return this.request<PivotalStoryResponse>(
       {
         method: 'POST',
-        url: `/projects/${projectId}/stories`,
+        url: `/projects/${this.PROJECT_ID}/stories`,
         data: story,
       },
       { progress: 'Creating story', success: 'Story created successfully', error: 'Failed to create a story' }
@@ -211,7 +197,6 @@ export default class PivotalClient {
    * @param story {PivotalStory} story details to be updated
    */
   async updateStory(id: number, story: Partial<PivotalStory>) {
-    PivotalClient.checkConfigSetup();
     return this.request<PivotalStoryResponse>(
       {
         method: 'PUT',

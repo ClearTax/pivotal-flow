@@ -22,7 +22,6 @@ export const SetupQuestions: QuestionCollection<SetupAnswers> = [
       if (val && val.length === 32) return true;
       return 'Please enter a valid 32 character pivotal token.';
     },
-    default: process.env.PIVOTAL_TOKEN,
   },
   {
     type: 'input',
@@ -36,7 +35,6 @@ For eg. in ${chalk.underline('https://www.pivotaltracker.com/n/projects/1234123'
       if (value.match(/^[0-9]{7}/)) return true;
       return 'Please enter a valid 7 digit Project ID.';
     },
-    default: process.env.PIVOTAL_PROJECT_ID,
   },
 ];
 
