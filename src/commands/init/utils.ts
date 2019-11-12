@@ -38,7 +38,7 @@ export const getPivotalFlowConfig = async (): Promise<PivotalFlowConfig | void> 
 };
 
 /**
- * Checks for config objects and required configs are exits or not
+ * Checks for config object and required configs are exits or not
  */
 export const isSetupComplete = async (): Promise<boolean> => {
   const config = await getPivotalFlowConfig();
