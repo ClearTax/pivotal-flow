@@ -73,12 +73,13 @@ export const createPivotalFlowConfigFile = async (projectId: string, apiToken: s
   const projectDetails = await client.getProject();
   const pivotalFlowConfig = createPivotalFlowConfig(projectDetails, apiToken);
   const jsonifyConfig = JSON.stringify(pivotalFlowConfig, null, 2);
-  writeFileSync(resolve(homedir(), CONFIG.PIVOTAL_CONFIG_FILE), jsonifyConfig, { encoding: 'utf8' });
+  const configFilePath = resolve(homedir(), CONFIG.PIVOTAL_CONFIG_FILE);
+  writeFileSync(configFilePath, jsonifyConfig, { encoding: 'utf8' });
 
   log(chalk`
 {dim A pivotal-flow-config file has been created in your home directory}
 
-{dim Feel free to add more project ids to the file} : {bold ${resolve(homedir(), CONFIG.PIVOTAL_CONFIG_FILE)}}
+{dim Feel free to add more project ids to the file} : {bold ${configFilePath}}
       `);
 
   process.exit(0);
