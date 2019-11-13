@@ -9,7 +9,7 @@ import inquirer from '../../utils/inquirer';
 import { PromptToSetup, SetupQuestions } from './questions';
 import { error, log } from '../../utils/console';
 import PivotalClient from '../../utils/pivotal/client';
-import { configFileName } from './constants';
+import { CONFIG } from './constants';
 import { PivotalProjectResponse } from '../../utils/pivotal/types';
 
 export interface PivotalProjectConfig {
@@ -26,7 +26,7 @@ export interface PivotalFlowConfig extends Config {
  * Searches for pivotal flow config and returns a config if found or returns undefined
  */
 export const getPivotalFlowConfig = async (): Promise<PivotalFlowConfig | void> => {
-  const explorer = cosmiconfig(`${homedir()}`, { searchPlaces: [`${configFileName.PIVOTAL_CONFIG_FILE}`] });
+  const explorer = cosmiconfig(`${homedir()}`, { searchPlaces: [`${CONFIG.PIVOTAL_CONFIG_FILE}`] });
   try {
     const pivotalFlowConfig = await explorer.search();
     if (pivotalFlowConfig) {
@@ -41,11 +41,10 @@ export const getPivotalFlowConfig = async (): Promise<PivotalFlowConfig | void> 
  * Checks for config object and required configs are exits or not
  */
 export const isSetupComplete = async (): Promise<boolean> => {
-  const config = await getPivotalFlowConfig();
+  const pivotalConfig = await getPivotalFlowConfig();
 
-  if (config && Array.isArray(config)) {
-    const [configObject] = config;
-    const { pivotalApiToken, projects } = configObject;
+  if (pivotalConfig) {
+    const { pivotalApiToken, projects } = pivotalConfig;
     return Boolean(pivotalApiToken && projects && projects.length >= 1);
   }
   return false;
@@ -70,17 +69,16 @@ export const createPivotalFlowConfig = (
  * @param apiToken
  */
 export const createPivotalFlowConfigFile = async (projectId: string, apiToken: string): Promise<void> => {
-  const client = new PivotalClient({ debug: true, projectId, apiToken });
+  const client = new PivotalClient({ projectId, apiToken });
   const projectDetails = await client.getProject();
   const pivotalFlowConfig = createPivotalFlowConfig(projectDetails, apiToken);
-  const jsonifyConfig = JSON.stringify([pivotalFlowConfig]);
-
-  writeFileSync(resolve(homedir(), configFileName.PIVOTAL_CONFIG_FILE), jsonifyConfig, { encoding: 'utf8' });
+  const jsonifyConfig = JSON.stringify(pivotalFlowConfig, null, 2);
+  writeFileSync(resolve(homedir(), CONFIG.PIVOTAL_CONFIG_FILE), jsonifyConfig, { encoding: 'utf8' });
 
   log(chalk`
 {dim A pivotal-flow-config file has been created in your home directory}
 
-{dim Feel free to add more project ids to the file} : {bold ~/${configFileName.PIVOTAL_CONFIG_FILE}}
+{dim Feel free to add more project ids to the file} : {bold ${resolve(homedir(), CONFIG.PIVOTAL_CONFIG_FILE)}}
       `);
 
   process.exit(0);
@@ -101,7 +99,7 @@ export const performSetup = async () => {
     }
   } else {
     log(chalk`
-{bold Looks like your setup is ready!.}
+{bold Looks like your setup is ready!}
 {bold You can start creating stories by running: 'pivotal-flow start'}
  `);
   }

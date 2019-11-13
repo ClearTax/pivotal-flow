@@ -20,7 +20,7 @@ import { getWorkflow, getStoryToWorkOn, startWorkingOnStory, selectProjectToCrea
   const { newStory = false, debug = false } = program;
   try {
     const { projectId, apiToken } = await selectProjectToCreateStory();
-    const client = new PivotalClient({ apiToken, projectId, debug });
+    const client = new PivotalClient({ apiToken, projectId });
     const workflow = await getWorkflow({ newStory: newStory as boolean });
     const profile = await client.getProfile();
     const story = await getStoryToWorkOn(client, profile, workflow);

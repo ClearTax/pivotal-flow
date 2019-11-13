@@ -153,13 +153,12 @@ export const selectProjectToCreateStory = async (): Promise<{ apiToken: string; 
   const pivotalConfig = await getPivotalFlowConfig();
   let projectConfig = { projectId: '', apiToken: '' };
 
-  if (pivotalConfig && Array.isArray(pivotalConfig)) {
-    const [config] = pivotalConfig;
-    const { projects, pivotalApiToken } = config;
+  if (pivotalConfig) {
+    const { projects, pivotalApiToken } = pivotalConfig;
 
     if (projects.length === 1) {
       const [project] = projects;
-      return { ...projectConfig, projectId: project.projectId, apiToken: pivotalApiToken };
+      return { ...projectConfig, projectId: String(project.projectId), apiToken: pivotalApiToken };
     }
 
     const { selectedProject } = await inquirer.prompt(PickProjectWorkflowQuestions(projects));
@@ -176,8 +175,7 @@ export const getStoryToWorkOn = async (
   const { id: ownerId } = owner;
 
   if (workflow === StartStoryWorkflow.New) {
-    const story = await createNewStory(client, ownerId);
-    return story;
+    return await createNewStory(client, ownerId);
   }
 
   const owned = workflow === StartStoryWorkflow.Owned;
@@ -191,7 +189,7 @@ export const getStoryToWorkOn = async (
  * @see https://github.com/mokkabonna/inquirer-autocomplete-prompt#example
  */
 export const getSearchableStoryListSource = (
-  /* Current story list to search from */
+  /** Current story list to search from */
   stories: PivotalStoryResponse[]
 ) => {
   const choices = stories.map(story => {
