@@ -38,7 +38,22 @@ If installed locally for your npm project, add the hooks and commands from `pivo
  }
 ```
 
-To be able to use the `pivotal-flow` [commands](#commands), run `pivotal-flow init` to receive instructions on how to set-up.
+To be able to use the `pivotal-flow` [commands](#commands), run `pivotal-flow init` it will create a `.pivotal-flow` config in your home directory.
+With below structure. To be able work on  more projects add the project details in the config file.
+
+```js
+
+    {
+        pivotalToken: '23bca3#######################',
+        projects: [
+            { 
+              projectId: 12345, 
+              projectName: "coolProject"
+            }
+        ]
+    }    
+
+```
 
 ## Usage
 
