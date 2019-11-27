@@ -21,6 +21,10 @@ pivotal-flow init
 
 ## Commands
 
+Run `pivotal-flow --help` to see usage & documentation.
+
+> you can also use the `pf` alias for `pivotal-flow`.
+
 ### init
 
 A guided questionnaire to set-up `pivotal-flow` with the basic [configuration](#configuration):
@@ -70,6 +74,35 @@ Then add the hooks and/or commands to your `package.json`:
  }
 ```
 
+### Hooks
+
+#### `check-story-id-in-branch`
+
+`post-checkout` - check that all _newly created branches_ have a [PivotalTracker][pivotal] story `id` in the branch name.
+
+**Why do we need the ID in the branch?**
+<br />
+
+This allows the GitHub integration to send updates to pivotal to [show branch & PR information in a story](https://www.pivotaltracker.com/help/articles/github_integration/#using-the-github-integration-branches).
+
+<img src="https://www.pivotaltracker.com/help/kb_assets/github_integration_4@2x.png" width="300" />
+
+<img src="https://www.pivotaltracker.com/help/kb_assets/github_integration_8@2x.png" width="300" />
+
+#### `add-story-id-to-commit`
+
+`add-story-id-to-commit` added as a `prepare-commit-msg` hook will pick up story `id` from the branch name (if it is present) and append it to each commit message.
+
+Again, this allows the GitHub integration to send updates to `PivotalTracker` of [commit information in a story](https://www.pivotaltracker.com/help/articles/github_integration/#using-the-github-integration-commits).
+
+<img src="https://www.pivotaltracker.com/help/kb_assets/github_integration_11@2x.png" width="300" />
+
+#### `check-story-id-in-commit`
+
+`check-story-id-in-commit` as a `commit-msg` hook - checks if _each_ new commit message contains the story `id` as well.
+
+In case you're not using the `add-story-id-to-commit` hook or don't want to enforce story id being present in every branch name, this hook makes sure the story id is present in the commit message (added by other means by the user).
+
 ## Configuration
 
 Once the `init` command is run, it creates a config file in your home directory. This is meant to be a per-user configuration.
@@ -94,59 +127,26 @@ Currently, a configuration file looks like the following:
 }
 ```
 
-**NOTE**: Since the `pivotalApiToken` is meant to be private, we discourage keeping the `pivotal-flow` configuration file under source control.
+**NOTE**: Since the `pivotalApiToken` is meant to be private, we discourage adding the `pivotal-flow` configuration file to source control.
 
-### Options
+### Configuration Options
 
 |Option|Type|Description|
 |---|---|---|
 |`pivotalApiToken`|`string`|[API Token from PivotalTracker](https://www.pivotaltracker.com/help/articles/api_token/).|
-|`projects`|`project[]`|A list of PivotalTracker projects which will be part of your workflow for creating / working on stories.|
+|`projects`|`project[]`|An array of `PivotalTracker` projects which will be part of your workflow for creating / working on stories.|
 |`projects[i].name`|`string`|The name of the project (or an alias) to be used when picking among projects in the different commands.|
 |`projects[i].id`|`string|number`|Each `PivotalTracker` project has an `id` which you can find by referring to your project's URL. For example, if your project's URL is `https://www.pivotaltracker.com/n/projects/1234567` then the project `id` would be `1234567`. This is required to query the stories from the project|
 
-## Usage
+## Commands in action
 
-`pivotal-flow` has few commands to automate your workflow.
-
-Run `pivotal-flow --help` to see usage & documentation.
-
-> you can also use the `pf` alias for `pivotal-flow`.
-
-## Hooks
-
-### `post-checkout`
-
-Check that all _newly created branches_ have a [Pivotal][pivotal] Story ID in the branch name.
-
-**Why do we need the ID in the branch?**
-This allows the GitHub integration to send updates to pivotal to [show branch & PR information in a story](https://www.pivotaltracker.com/help/articles/github_integration/#using-the-github-integration-branches).
-
-<img src="https://www.pivotaltracker.com/help/kb_assets/github_integration_4@2x.png" width="300" />
-
-<img src="https://www.pivotaltracker.com/help/kb_assets/github_integration_8@2x.png" width="300" />
-
-### `prepare-commit-msg`
-
-Picks up story ID from a branch name & appends it to each commit message.
-
-Again, this allows the GitHub integration to send updates to pivotal of [commit information in a story](https://www.pivotaltracker.com/help/articles/github_integration/#using-the-github-integration-commits).
-
-<img src="https://www.pivotaltracker.com/help/kb_assets/github_integration_11@2x.png" width="300" />
-
-### `commit-msg`
-
-Checks if _each_ new commit message contains the Story ID as well.
-
-In case you're not using the automatic addition hook (`prepare-commit-msg`) or don't want to enforce story id being present in branch name, this hook makes sure the Story ID is present in the commit message (added by other means by the user).
-
-## Starting a new story
+### Starting a new story
 
 Run `pivotal-flow` (alias: `pf`) as a local/global command to start creating stories from the command line:
 
 ![Pivotal Flow](https://assets1.cleartax-cdn.com/cleargst-frontend/misc/1567511137_pivotal_flow.gif)
 
-## Work on an existing story
+### Work on an existing story
 
 ![my stories](https://assets1.cleartax-cdn.com/cleargst-frontend/misc/1567672934_mystories.gif)
 
@@ -154,7 +154,7 @@ Run `pivotal-flow` (alias: `pf`) as a local/global command to start creating sto
 
 ![fuzzy search](https://assets1.cleartax-cdn.com/cleargst-frontend/misc/1567672849_fuzzy_search.gif)
 
-### Other
+## Other
 
 Using `pivotal-flow` hooks alongside [`Pivotal GitHub Integration`][pivotal-github] ensures your updates (commits, pushes, merges etc) on GitHub are posted directly and automatically to your Pivotal stories.
 
@@ -162,7 +162,7 @@ Follow instructions for and the [`Pivotal GitHub Integration`][pivotal-github] t
 
 ## Credits
 
-The concept of adding Story IDs (picked from the branch-name) to all commits are from the awesome [`git-tracker`][git-tracker] project by [@stevenharman](https://github.com/stevenharman) - ported to husky/node implementation in `pivotal-flow`'s `prepare-commit-msg` hook.
+The concept of adding story ids (picked from the branch-name) to all commits are from the awesome [`git-tracker`][git-tracker] project by [@stevenharman](https://github.com/stevenharman) - ported to husky/node implementation in `pivotal-flow`'s `add-story-id-to-commit` hook.
 
 ## References
 
