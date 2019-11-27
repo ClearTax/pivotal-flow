@@ -1,6 +1,6 @@
 # pivotal-flow 🔀
 
-Automate your pivotal workflow.
+> A command-line tool that helps you manage & automate your workflow to use with [PivotalTracker][pivotal].
 
 [![npm](https://img.shields.io/npm/v/pivotal-flow?style=flat-square)](https://www.npmjs.com/package/pivotal-flow)
 [![GitHub](https://img.shields.io/github/license/cleartax/pivotal-flow?style=flat-square)](https://github.com/ClearTax/pivotal-flow/blob/master/LICENSE.md)
@@ -9,18 +9,50 @@ Automate your pivotal workflow.
 ## Install
 
 ```sh
-# Install it locally for your npm project
-npm install -D pivotal-flow
-
-# You can also install it globally
+# install pivotal-flow globally
+# you can check if it was installed correctly by running `pivotal-flow --version`
 npm install -g pivotal-flow
+
+# initialize pivotal-flow
+pivotal-flow init
 ```
 
 `pivotal-flow` is built to work with [`husky` 🐶][husky] along with the [Pivotal GitHub integration][pivotal-github].
 
-## Set up
+## Commands
 
-If installed locally for your npm project, add the hooks and commands from `pivotal-flow` to your `package.json` file, for example:
+### init
+
+A guided questionnaire to set-up `pivotal-flow` with the basic [configuration](#configuration):
+
+```sh
+$ pivotal-flow init
+# generate a basic configuration file in your home directory.
+```
+
+### start
+
+Create a new story or work on an existing story (from the [stories](https://www.pivotaltracker.com/help/articles/working_with_stories/) in your [PivotalTracker project(s)](https://www.pivotaltracker.com/help/articles/creating_a_project/)):
+
+```sh
+$ pivotal-flow start
+# start working on a story guided by a questionnaire
+```
+
+## git-hooks via husky
+
+`pivotal-flow` also provides a few [git-hooks] to automate a few tasks when working with `PivotalTracker` as your project management tool. You can add the provided hooks using [husky].
+
+### Set-up
+
+In order to use the hooks from `pivotal-flow`, add it as a dependency to your npm project:
+
+```sh
+$ npm install --save-dev pivotal-flow
+# install it as a dev-dependency
+```
+
+Then add the hooks and/or commands to your `package.json`:
 
 ```diff
    },
@@ -30,30 +62,48 @@ If installed locally for your npm project, add the hooks and commands from `pivo
    },
    "husky": {
      "hooks": {
-+      "post-checkout": "pivotal-flow hook post-checkout",
-+      "prepare-commit-msg": "pivotal-flow hook prepare-commit-msg",
-+      "commit-msg": "pivotal-flow hook commit-msg",
++      "post-checkout": "pivotal-flow hook check-story-id-in-branch",
++      "prepare-commit-msg": "pivotal-flow hook add-story-id-to-commit",
++      "commit-msg": "pivotal-flow hook check-story-id-in-commit",
      }
    }
  }
 ```
 
-To be able to use the `pivotal-flow` [commands](#commands), run `pivotal-flow init` it will create a `.pivotal-flow` config in your home directory.
-With below structure. To be able work on  more projects add the project details in the config file.
+## Configuration
 
-```js
+Once the `init` command is run, it creates a config file in your home directory. This is meant to be a per-user configuration.
 
+You can modify/add the configuration file in multiple levels which are supported via [cosmiconfig].
+
+Currently, a configuration file looks like the following:
+
+```json
+{
+  "projects": [
     {
-        pivotalToken: '23bca3#######################',
-        projects: [
-            { 
-              projectId: 12345, 
-              projectName: "coolProject"
-            }
-        ]
-    }    
-
+      "name": "Alpha",
+      "id": 1234567
+    },
+    {
+      "name": "Bravo",
+      "id": 7654321
+    }
+  ],
+  "pivotalApiToken": "abcde*****************************"
+}
 ```
+
+**NOTE**: Since the `pivotalApiToken` is meant to be private, we discourage keeping the `pivotal-flow` configuration file under source control.
+
+### Options
+
+|Option|Type|Description|
+|---|---|---|
+|`pivotalApiToken`|`string`|[API Token from PivotalTracker](https://www.pivotaltracker.com/help/articles/api_token/).|
+|`projects`|`project[]`|A list of PivotalTracker projects which will be part of your workflow for creating / working on stories.|
+|`projects[i].name`|`string`|The name of the project (or an alias) to be used when picking among projects in the different commands.|
+|`projects[i].id`|`string|number`|Each `PivotalTracker` project has an `id` which you can find by referring to your project's URL. For example, if your project's URL is `https://www.pivotaltracker.com/n/projects/1234567` then the project `id` would be `1234567`. This is required to query the stories from the project|
 
 ## Usage
 
@@ -62,27 +112,6 @@ With below structure. To be able work on  more projects add the project details 
 Run `pivotal-flow --help` to see usage & documentation.
 
 > you can also use the `pf` alias for `pivotal-flow`.
-
-## Commands
-
-### init
-
-```sh
-# provides instructions on how to get set-up to use other pivotal-flow commands
-$ pivotal-flow init
-```
-
-### start
-
-Create a new story or work on an existing story via the command line.
-
-```sh
- # start working on a story guided by a questionnaire
- $ pivotal-flow start
-
- # create a new story & then start working on it
- $ pivotal-flow start --new
-```
 
 ## Hooks
 
@@ -147,3 +176,4 @@ The concept of adding Story IDs (picked from the branch-name) to all commits are
 [git-tracker]: https://github.com/stevenharman/git_tracker
 [git-hooks]: https://git-scm.com/docs/githooks#_post_checkout
 [pivotal-github]: https://www.pivotaltracker.com/help/articles/github_integration/
+[cosmiconfig]: https://github.com/davidtheclark/cosmiconfig
