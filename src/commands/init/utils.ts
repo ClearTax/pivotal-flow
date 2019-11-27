@@ -1,39 +1,36 @@
 import chalk from 'chalk';
-import { writeFileSync } from 'fs';
 import { homedir } from 'os';
-import { resolve } from 'path';
+import { join } from 'path';
 import { cosmiconfig } from 'cosmiconfig';
-import { Config } from 'cosmiconfig/dist/types';
 
+// other utils
 import inquirer from '../../utils/inquirer';
-import { PromptToSetup, SetupQuestions } from './questions';
 import { error, log } from '../../utils/console';
 import PivotalClient from '../../utils/pivotal/client';
-import { CONFIG } from './constants';
 import { PivotalProjectResponse } from '../../utils/pivotal/types';
+import { writeFile } from '../../utils/fs';
 
-export interface PivotalProjectConfig {
-  projectName: string;
-  projectId: number;
-}
-
-export interface PivotalFlowConfig extends Config {
-  pivotalApiToken: string;
-  projects: PivotalProjectConfig[];
-}
+// constants & types
+import { COSMICONFIG_MODULE_NAME, COSMICONFIG_SEARCH_PLACES, DEFAULT_CONFIG_FILE_NAME } from './constants';
+import { PromptToSetup, SetupQuestions } from './questions';
+import { Configuration, ConfigResult } from './types';
 
 /**
  * Searches for pivotal flow config and returns a config if found or returns undefined
  */
-export const getPivotalFlowConfig = async (): Promise<PivotalFlowConfig | void> => {
-  const explorer = cosmiconfig(`${homedir()}`, { searchPlaces: [`${CONFIG.PIVOTAL_CONFIG_FILE}`] });
+export const getPivotalFlowConfig = async (): Promise<Configuration | null> => {
+  const explorer = cosmiconfig(COSMICONFIG_MODULE_NAME, {
+    searchPlaces: COSMICONFIG_SEARCH_PLACES,
+  });
   try {
-    const pivotalFlowConfig = await explorer.search();
-    if (pivotalFlowConfig) {
-      return pivotalFlowConfig.config;
+    const result = (await explorer.search()) as ConfigResult;
+    if (result && !result.isEmpty) {
+      return result.config;
     }
+    return null;
   } catch (e) {
     error(`Some error occurred while creating the config file, Please try again!. ${e}`);
+    return null;
   }
 };
 
@@ -41,10 +38,10 @@ export const getPivotalFlowConfig = async (): Promise<PivotalFlowConfig | void> 
  * Checks for config object and required configs are exits or not
  */
 export const isSetupComplete = async (): Promise<boolean> => {
-  const pivotalConfig = await getPivotalFlowConfig();
+  const config = await getPivotalFlowConfig();
 
-  if (pivotalConfig) {
-    const { pivotalApiToken, projects } = pivotalConfig;
+  if (config) {
+    const { pivotalApiToken, projects } = config;
     return Boolean(pivotalApiToken && projects && projects.length >= 1);
   }
   return false;
@@ -55,12 +52,9 @@ export const isSetupComplete = async (): Promise<boolean> => {
  * @param {PivotalProjectResponse} projectDetails
  * @param apiToken
  */
-export const createPivotalFlowConfig = (
-  projectDetails: PivotalProjectResponse,
-  apiToken: string
-): PivotalFlowConfig => {
-  const { name: projectName, id: projectId } = projectDetails;
-  return { projects: [{ projectName, projectId }], pivotalApiToken: apiToken };
+export const getBasicConfiguration = (projectDetails: PivotalProjectResponse, apiToken: string): Configuration => {
+  const { name, id } = projectDetails;
+  return { projects: [{ name, id }], pivotalApiToken: apiToken };
 };
 
 /**
@@ -71,16 +65,19 @@ export const createPivotalFlowConfig = (
 export const createPivotalFlowConfigFile = async (projectId: string, apiToken: string): Promise<void> => {
   const client = new PivotalClient({ projectId, apiToken });
   const projectDetails = await client.getProject();
-  const pivotalFlowConfig = createPivotalFlowConfig(projectDetails, apiToken);
-  const jsonifyConfig = JSON.stringify(pivotalFlowConfig, null, 2);
-  const configFilePath = resolve(homedir(), CONFIG.PIVOTAL_CONFIG_FILE);
-  writeFileSync(configFilePath, jsonifyConfig, { encoding: 'utf8' });
+
+  const config = getBasicConfiguration(projectDetails, apiToken);
+  const filePath = join(homedir(), DEFAULT_CONFIG_FILE_NAME);
+
+  await writeFile(filePath, JSON.stringify(config, null, 2), { encoding: 'utf8' });
 
   log(chalk`
-{dim A pivotal-flow-config file has been created in your home directory}
+A basic configuration file has been created for you in your home directory:-
+  {bold ${filePath}}
 
-{dim Feel free to add more project ids to the file} : {bold ${configFilePath}}
-      `);
+Find more details about addding/changing the configuration options here:
+  {underline https://github.com/ClearTax/pivotal-flow}
+`);
 
   process.exit(0);
 };

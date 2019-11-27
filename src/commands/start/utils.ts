@@ -13,7 +13,7 @@ import {
 import { StartStoryWorkflow } from './types';
 import {
   PickStoryWorkflowQuestions,
-  PickProjectWorkflowQuestions,
+  getPickProjectQuestions,
   WorkOnNewStoryAnswers,
   WorkOnNewStoryQuestions,
   getSelectStoryFromListQuestions,
@@ -150,21 +150,21 @@ export const getWorkflow = async ({ newStory }: { newStory: boolean }): Promise<
 };
 
 export const selectProjectToCreateStory = async (): Promise<{ apiToken: string; projectId: string }> => {
-  const pivotalConfig = await getPivotalFlowConfig();
-  let projectConfig = { projectId: '', apiToken: '' };
+  const config = await getPivotalFlowConfig();
 
-  if (pivotalConfig) {
-    const { projects, pivotalApiToken } = pivotalConfig;
-
+  if (config && config.projects && config.projects.length) {
+    const { projects, pivotalApiToken } = config;
+    // if there's a single project, let's just select it
     if (projects.length === 1) {
       const [project] = projects;
-      return { ...projectConfig, projectId: String(project.projectId), apiToken: pivotalApiToken };
+      return { projectId: String(project.id), apiToken: pivotalApiToken };
     }
 
-    const { selectedProject } = await inquirer.prompt(PickProjectWorkflowQuestions(projects));
-    projectConfig = { ...projectConfig, projectId: String(selectedProject), apiToken: pivotalApiToken };
+    const { selectedProject } = await inquirer.prompt(getPickProjectQuestions(projects));
+    return { projectId: String(selectedProject), apiToken: pivotalApiToken };
   }
-  return projectConfig;
+
+  return { projectId: '', apiToken: '' };
 };
 
 export const getStoryToWorkOn = async (
