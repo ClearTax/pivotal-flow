@@ -47,8 +47,6 @@ $ pivotal-flow start
 
 `pivotal-flow` also provides a few [git-hooks] to automate a few tasks when working with `PivotalTracker` as your project management tool. You can add the provided hooks using [husky].
 
-### Set-up
-
 In order to use the hooks from `pivotal-flow`, add it as a dependency to your npm project:
 
 ```sh

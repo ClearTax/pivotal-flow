@@ -76,7 +76,7 @@ A basic configuration file has been created for you in your home directory:-
   {bold ${filePath}}
 
 Find more details about addding/changing the configuration options here:
-  {underline https://github.com/ClearTax/pivotal-flow}
+  {underline https://github.com/ClearTax/pivotal-flow#configuration}
 `);
 
   process.exit(0);
