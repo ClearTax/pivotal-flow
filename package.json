@@ -1,6 +1,6 @@
 {
   "name": "pivotal-flow",
-  "version": "1.1.0",
+  "version": "2.0.0-alpha.3",
   "description": "🔀 A command-line tool that helps you manage & automate your workflow to use with PivotalTracker.",
   "engines": {
     "node": ">=8",
