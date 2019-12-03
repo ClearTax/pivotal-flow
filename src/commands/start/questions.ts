@@ -155,8 +155,8 @@ export const getStartStoryQuestions = (story: PivotalStoryResponse): QuestionCol
       when: answers => answers.checkoutBranch === true,
       default: slugifiedStoryName,
       validate: (input: string) => {
-        if (!input || input.length < 8 || input.length > 25) {
-          return 'Please limit the branch name (excluding story-type & story-id) to between 8-25 characters.';
+        if (!input || input.length < 8 || input.length > 40) {
+          return 'Please limit the branch name (excluding story-type & story-id) to between 8-40 characters.';
         }
         return true;
       },
