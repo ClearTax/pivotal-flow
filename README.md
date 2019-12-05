@@ -134,7 +134,7 @@ Currently, a configuration file looks like the following:
 |`pivotalApiToken`|`string`|[API Token from PivotalTracker](https://www.pivotaltracker.com/help/articles/api_token/).|
 |`projects`|`project[]`|An array of `PivotalTracker` projects which will be part of your workflow for creating / working on stories.|
 |`projects[i].name`|`string`|The name of the project (or an alias) to be used when picking among projects in the different commands.|
-|`projects[i].id`|`string|number`|Each `PivotalTracker` project has an `id` which you can find by referring to your project's URL. For example, if your project's URL is `https://www.pivotaltracker.com/n/projects/1234567` then the project `id` would be `1234567`. This is required to query the stories from the project|
+|`projects[i].id`| `string` / `number` |Each `PivotalTracker` project has an `id` which you can find by referring to your project's URL. For example, if your project's URL is `https://www.pivotaltracker.com/n/projects/1234567` then the project `id` would be `1234567`. This is required to query the stories from the project|
 
 ## Commands in action
 
