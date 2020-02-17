@@ -79,7 +79,7 @@
     "inquirer": "^7.0.0",
     "inquirer-autocomplete-prompt": "^1.0.1",
     "ora": "^4.0.2",
-    "serialize-javascript": "^2.1.0"
+    "serialize-javascript": "^3.0.0"
   },
   "devDependencies": {
     "@cleartax/eslint-config": "^1.1.0",
